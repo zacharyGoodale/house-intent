@@ -41,7 +41,7 @@ async def _ask(args: argparse.Namespace) -> int:
     from ha_jev.obslog import RequestLog
     from ha_jev.profiles import speaker_for
 
-    settings = load_settings()
+    settings = load_settings(demo=args.ha == "stub")
     if args.ha == "real":
         if not _real_allowed():
             print("error: --ha real needs HA_JEV_ALLOW_REAL=1, HA_URL and HA_TOKEN", file=sys.stderr)
@@ -104,7 +104,7 @@ async def _tui(args: argparse.Namespace) -> int:
     if args.ha == "real" and not _real_allowed():
         print("error: real HA needs HA_JEV_ALLOW_REAL=1, HA_URL and HA_TOKEN", file=sys.stderr)
         return EXIT_CONFIG
-    settings = load_settings()
+    settings = load_settings(demo=args.ha == "stub")
     speaker = speaker_for(settings.people, person_id=args.person, agent_id=args.agent)
     if (args.person or args.agent) and speaker is None:
         print(f"error: no person for --person {args.person!r} / --agent {args.agent!r} in people.toml", file=sys.stderr)
@@ -146,7 +146,7 @@ async def _eval(args: argparse.Namespace) -> int:
     from ha_jev.jev import TypeSafeJevClient
     from ha_jev.luna import LunaJudge, NullLuna, OpenAILuna
 
-    settings = load_settings()
+    settings = load_settings(demo=True)
     golden = Path(args.golden)
     overlay_dir = golden.parent / "overlays"
     try:
@@ -206,7 +206,7 @@ def build_parser() -> argparse.ArgumentParser:
     a = sub.add_parser("ask", help="handle one utterance")
     a.add_argument("text")
     a.add_argument("--area", help="speaker area id (or name)")
-    a.add_argument("--person", help="speaker's person id from config/people.toml")
+    a.add_argument("--person", help="speaker's person id from people.toml")
     a.add_argument("--agent", help="HA conversation agent id; mapped to a person by people.toml `agents`")
     a.add_argument("--memory", action="store_true", help="use the real memory store (default: in-memory with the stub)")
     a.add_argument("--json", action="store_true", help="print Result.to_dict()")
@@ -219,7 +219,7 @@ def build_parser() -> argparse.ArgumentParser:
     t = sub.add_parser("tui", help="interactive text commands (real Home Assistant by default)")
     t.add_argument("--ha", choices=("stub", "real"), default="real")
     t.add_argument("--area", help="speaker area id (or name)")
-    t.add_argument("--person", help="speaker's person id from config/people.toml")
+    t.add_argument("--person", help="speaker's person id from people.toml")
     t.add_argument("--agent", help="HA conversation agent id; mapped to a person by people.toml `agents`")
     t.add_argument("--no-llm", action="store_true", help="disable open-ended answers")
     t.add_argument("--fallback", choices=("hermes", "luna"), default="hermes",

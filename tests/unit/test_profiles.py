@@ -27,7 +27,7 @@ def test_speaker_from_person_id_or_conversation_agent():
 
 def _config_copy(tmp_path, people_toml: str):
     for name in ("scope.toml", "safety.toml", "ha_jev.toml"):
-        shutil.copy(ROOT / "config" / name, tmp_path / name)
+        shutil.copy(ROOT / "demo" / "config" / name, tmp_path / name)
     (tmp_path / "people.toml").write_text(people_toml)
 
 

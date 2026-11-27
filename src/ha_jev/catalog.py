@@ -181,7 +181,7 @@ class Catalog:
         areas: dict[str, AreaInfo] = {}
         for a in registry.areas.values():
             extra = list(scope.aliases.get(f"area:{a.id}", []))
-            areas[a.id] = AreaInfo(a.id, a.name.strip(), tuple(dict.fromkeys([*a.aliases, *extra])))
+            areas[a.id] = AreaInfo(a.id, a.name.strip(), tuple(dict.fromkeys([*a.aliases, *extra, *a.floor_names])))
 
         registry_names = {eid: e.name for eid, e in registry.entities.items()}
         touching = _definitions_touching_denied(registry, states, areas, safety, table)
@@ -280,12 +280,15 @@ class Catalog:
                  if ce.controllable and (table.is_music_speaker(ce.domain, ce.device_class, ce.features)
                                          or eid in set(getattr(scope.defaults, "speakers", None) or []))]
 
+        # Only the domains this home has: no thermostat question for a home without one, and no service for a
+        # domain with nothing in scope.
+        present = {ce.domain for ce in entities.values()} | {c.domain for p in presets.values() for c in p.calls}
         return cls(
             areas=areas, entities=entities, controllable=controllable, presets=presets,
             preset_descriptors=preset_desc, preset_areas=preset_areas,
             scene_options=[*scene_like, *presets.keys()], target_options=target_options,
             mention_options=mention_options, sources=sources, todo_lists=todo_lists, music_speakers=music,
-            defaults=scope.defaults, registry_names=registry_names, caps=table,
+            defaults=scope.defaults, registry_names=registry_names, caps=table.only(present),
             registry_areas={eid: (e.area_id if e.area_id in areas else None) for eid, e in registry.entities.items()},
             music_twins={s: t for s, t in twins.items() if s in set(music)},
             music_integration=scope.music.integration, music_limit=scope.music.search_limit,

@@ -161,7 +161,9 @@ class FakeHAServer:
             await ws.send(json.dumps({"id": m["id"], "type": "result", "success": False,
                                       "error": {"code": "unknown_error", "message": "injected"}}))
             return
-        if t == "config/area_registry/list":
+        if t == "config/floor_registry/list":
+            result = self.registry.get("floors", [])
+        elif t == "config/area_registry/list":
             result = self.registry["areas"]
         elif t == "config/device_registry/list":
             result = self.registry["devices"]

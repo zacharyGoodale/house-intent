@@ -32,7 +32,7 @@ def final_text(data):
 
 
 async def run(args):
-    settings = load_settings()
+    settings = load_settings(demo=True)
     key = HermesClient(settings.hermes, settings.luna)._key()
     base = args.base_url.rstrip('/')
     out = Path(args.out)
@@ -57,7 +57,7 @@ async def run(args):
         with (out / 'results.jsonl').open('w') as output:
             for repeat in range(args.repeats):
                 for index, case in enumerate(cases):
-                    s = load_settings(overrides=case.config_overrides)
+                    s = load_settings(overrides=case.config_overrides, demo=True)
                     ha = StubHA.default(now=case.now, initial_state=case.initial_state)
                     catalog = Catalog.build(await ha.get_registry(), await ha.get_states(), s.scope, s.safety, s.capabilities)
                     speaker = s.person(case.person)

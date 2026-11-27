@@ -137,7 +137,7 @@ FAN_OVERLAY = {"entities": [{"entity_id": "fan.ceiling_fan", "friendly_name": "C
 def fan_config(tmp_path):
     import shutil
     cfg = tmp_path / "config"
-    shutil.copytree(SRC.parent / "config", cfg)
+    shutil.copytree(SRC.parent / "demo" / "config", cfg)
     (cfg / "capabilities.toml").write_text(FAN_ROW)
     return cfg
 

@@ -118,7 +118,7 @@ async def run_eval(cases: list[GoldenCase], *, jev: JevClient, luna: LunaClient,
     def loader(overrides: dict) -> Settings:
         key = json.dumps(overrides, sort_keys=True)
         if key not in cache:
-            cache[key] = load_settings(config_dir=config_dir, overrides=overrides)
+            cache[key] = load_settings(config_dir=config_dir, overrides=overrides, demo=True)
         return cache[key]
 
     sem = asyncio.Semaphore(max(1, concurrency))

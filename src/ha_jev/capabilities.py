@@ -144,6 +144,22 @@ _MEDIA_ACTIONS = {
     "play_content": _a(None, None, "play a specific song, artist, playlist, station or podcast", delegate="scene_choice",
                        all_when_unspecified=True),
 }
+_CLIMATE_ACTIONS = {
+    "turn_on": _a("turn_on", "turn_on", "turn on the AC or heating, resuming the last mode", reply="R_ON"),
+    "turn_off": _a("set_hvac_mode", None, "turn off the AC, heater or thermostat", reply="R_OFF",
+                   data={"hvac_mode": "off"}),
+    "set_temperature": _a("set_temperature", "target_temperature",
+                          "set the thermostat or AC to a specific temperature in degrees"),
+    "warmer": _a("set_temperature", "target_temperature",
+                 "raise the target temperature: warmer, turn the temperature up, too cold; optional number of degrees",
+                 reply="R_WARMER"),
+    "cooler": _a("set_temperature", "target_temperature",
+                 "lower the target temperature: cooler, turn the temperature down, too hot; optional number of degrees",
+                 reply="R_COOLER"),
+    "heat": _a("set_hvac_mode", None, "switch to heating mode", data={"hvac_mode": "heat"}),
+    "cool": _a("set_hvac_mode", None, "switch to cooling mode", data={"hvac_mode": "cool"}),
+    "fan_only": _a("set_hvac_mode", None, "fan only without heating or cooling", data={"hvac_mode": "fan_only"}),
+}
 _COVER_KINDS = {"awning": "awning", "blind": "blinds", "curtain": "curtains", "shade": "shades",
                 "shutter": "shutters", "window": "window", "garage": "garage door", "gate": "gate", "door": "door"}
 
@@ -171,6 +187,16 @@ BASE_ROWS: tuple[DomainCaps, ...] = (
                target_option=True, mention=True, device_type="media_player",
                device_type_description="speakers, TV, music, volume", role="media", area_sweep="music_speakers",
                unspecified="active"),
+    DomainCaps("climate", True, "thermostat", "temperature_action", _CLIMATE_ACTIONS,
+               ("on_off", "temperature", "target_temperature", "hvac_mode"), builder="climate",
+               action_instructions="What should happen to the thermostat in {u}? Bare warmer/cooler or too hot/cold "
+                                   "means room temperature; explicit lights or warm/cool white means light colour. "
+                                   "Questions about current temperature or settings are device_query, not commands.",
+               target_option=True, mention=True, device_type="thermostat",
+               device_type_description="indoor room temperature, thermostat, AC, air conditioning, heater, "
+                                       "heating/cooling, too hot/cold, warmer/cooler (not light colour or outdoor "
+                                       "weather)",
+               unspecified="only_or_room", implicit_target=True),
     DomainCaps("scene", True, "scene", None, {"turn_on": _a("turn_on", reply="R_SCENE")}, (), scene_like=True,
                security_name_rule=True, definition_source="state_members"),
     DomainCaps("script", True, "script", None, {"turn_on": _a("turn_on", reply="R_SCENE")}, (), scene_like=True,
@@ -240,6 +266,11 @@ class CapabilityTable:
             if r.domain in NEVER_ALLOWED_DOMAINS and r.controllable:
                 raise CapabilityError(f"domain {r.domain} can never be controllable")
         return CapabilityTable([*self.rows.values(), *rows])
+
+    def only(self, domains: Iterable[str]) -> CapabilityTable:
+        """The rows for these domains: a home is asked about, and can act on, only the kinds of device it has."""
+        keep = set(domains)
+        return CapabilityTable(r for d, r in self.rows.items() if d in keep)
 
     # ---- lookups ------------------------------------------------------------------------------
     def caps_for(self, domain: str) -> DomainCaps | None:

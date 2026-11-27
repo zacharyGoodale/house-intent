@@ -16,12 +16,12 @@ from collections.abc import Callable, Mapping, Sequence
 from typing import Any
 
 from ha_jev import capabilities as caps
-from ha_jev.ha.interface import Area, Device, EntityEntry, EntityState, HAError, Registry
+from ha_jev.ha.interface import Area, Device, EntityEntry, EntityState, HAError, Registry, floor_names_by_id
 from ha_jev.obslog import redact
 
 log = logging.getLogger("ha_jev.ha.real")
 
-REGISTRY_EVENTS = ("area_registry_updated", "device_registry_updated", "entity_registry_updated")
+REGISTRY_EVENTS = ("floor_registry_updated", "area_registry_updated", "device_registry_updated", "entity_registry_updated")
 EXPOSE_COMMAND = "homeassistant/expose_entity/list"  # verify against HA source when wiring (spec §9.2)
 
 
@@ -221,6 +221,11 @@ class RealHA:
 
     # ---- registry and states ------------------------------------------------------------------
     async def _load_all(self) -> None:
+        try:  # floors arrived in HA 2024.4; an older HA just has none
+            floors = await self._command({"type": "config/floor_registry/list"}) or []
+        except HAError as e:
+            log.info("no floor registry (%s); floors are not room names", e)
+            floors = []
         areas = await self._command({"type": "config/area_registry/list"}) or []
         devices = await self._command({"type": "config/device_registry/list"}) or []
         entities = await self._command({"type": "config/entity_registry/list"}) or []
@@ -234,7 +239,7 @@ class RealHA:
                                                                dict(s.get("attributes") or {})) for s in states}
         exposed_map = exposed_raw.get("exposed_entities", exposed_raw) if isinstance(exposed_raw, dict) else {}
         configs = await self._load_definitions(entities)
-        self._registry = self._build_registry(areas, devices, entities, exposed_map, configs)
+        self._registry = self._build_registry(areas, devices, entities, exposed_map, configs, floors)
 
     async def _load_definitions(self, entities: list) -> dict[str, Any]:
         """Script and automation configs (decision 6: refuse routines that reach a lock). A failed fetch leaves
@@ -255,9 +260,11 @@ class RealHA:
         return out
 
     def _build_registry(self, areas: list, devices: list, entities: list, exposed: Mapping[str, Any],
-                        configs: Mapping[str, Any] | None = None) -> Registry:
+                        configs: Mapping[str, Any] | None = None, floors: list | None = None) -> Registry:
+        floor_names = floor_names_by_id(floors or [])
         area_map = {a.get("area_id") or a.get("id"): Area(a.get("area_id") or a.get("id"), a.get("name", ""),
-                                                          tuple(a.get("aliases") or ())) for a in areas}
+                                                          tuple(a.get("aliases") or ()),
+                                                          floor_names.get(a.get("floor_id"), ())) for a in areas}
         dev_map = {d["id"]: Device(d["id"], d.get("name_by_user") or d.get("name") or d["id"], d.get("area_id"),
                                    d.get("manufacturer"), d.get("model")) for d in devices}
         ents: dict[str, EntityEntry] = {}

@@ -23,9 +23,8 @@ test -x "$repo/.venv/bin/ha-jev-server"
 test -x "$caddy" || { echo "Install Caddy at $caddy first." >&2; exit 1; }
 test -s "$private/service.env"
 test -s "$private/users.json"
-test -s "$private/config/ha_jev.toml"
-test -s "$private/config/scope.toml"
-test -s "$private/config/safety.toml"
+# Every config file is optional (docs/configuration.md); an empty directory runs on Home Assistant's own setup.
+test -d "$private/config" || install -d -m 700 -o "$service_user" -g "$service_group" "$private/config"
 if grep -q REPLACE_WITH "$private/service.env" "$private/users.json"; then
   echo 'Provision service.env and users.json before activation.' >&2; exit 1
 fi

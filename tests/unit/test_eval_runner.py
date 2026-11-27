@@ -118,7 +118,7 @@ def test_cli_refuses_real_ha_without_opt_in(monkeypatch, capsys):
 
 def test_cli_ask_prints_calls(monkeypatch, capsys):
     monkeypatch.setattr("ha_jev.jev.TypeSafeJevClient", lambda settings: _ClosableFake())
-    monkeypatch.setenv("HA_JEV_CONFIG_DIR", str(Path(__file__).resolve().parents[2] / "config"))
+    monkeypatch.setenv("HA_JEV_CONFIG_DIR", str(Path(__file__).resolve().parents[2] / "demo" / "config"))
     monkeypatch.setattr("ha_jev.obslog.RequestLog.write", lambda self, rec: None)
     assert cli.main(["ask", "turn off the ceiling light", "--area", "living_room", "--no-llm"]) == 0
     out = capsys.readouterr().out

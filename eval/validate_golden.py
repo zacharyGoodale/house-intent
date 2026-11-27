@@ -17,10 +17,13 @@ import re
 import sys
 import tomllib
 from collections import Counter
+from dataclasses import asdict
 from pathlib import Path
 
+from ha_jev.config import load_settings
+
 ROOT = Path(__file__).resolve().parent.parent
-FIXTURE = ROOT / "fixtures" / "ha_snapshot.json"
+FIXTURE = ROOT / "demo" / "ha_snapshot.json"
 OVERLAY_DIR = ROOT / "eval" / "overlays"
 
 TAGS = set("""light_named light_area light_house light_brightness light_color light_color_temp light_relative onoff_only
@@ -38,7 +41,7 @@ MODE_FOR = {"executed": {"chime_success", "speech"}, "clarify": {"speech"}, "ans
 FIELDS_REQ = {"id", "utterance", "tags", "expected_outcome", "expected_response_mode", "expected_calls", "requires_llm"}
 FIELDS_ALL = FIELDS_REQ | {"person", "memory", "speaker_area", "history", "initial_state", "overlay", "now", "config_overrides",
                            "expected_clarify_options", "reply", "acceptable", "source", "notes"}
-STUB_STATE = ROOT / "fixtures" / "stub_state.json"
+STUB_STATE = ROOT / "demo" / "stub_state.json"
 # Music Assistant plays on its own players, the twins of the speakers (music.md §3.5): targets are checked against
 # the stub's (and overlays') music_assistant players instead of the voice scope.
 MUSIC_DOMAIN = "music_assistant"
@@ -83,8 +86,9 @@ class World:
 
     def __init__(self, overlays: list[dict]):
         fx = json.loads(FIXTURE.read_text())
-        scope_cfg = tomllib.loads((ROOT / "config" / "scope.toml").read_text())
-        self.safety = tomllib.loads((ROOT / "config" / "safety.toml").read_text())
+        scope_cfg = tomllib.loads((ROOT / "demo" / "config" / "scope.toml").read_text())
+        # The demo's safety.toml over the built-in rules, as the router sees them.
+        self.safety = asdict(load_settings(ROOT / "demo" / "config").safety)
         self.areas = {a["id"]: a for a in fx["areas"]}
         self.entities = {e["entity_id"]: dict(e) for e in fx["entities"]}
         # sun.sun is added by stub_state.json (SPEC §9.1)

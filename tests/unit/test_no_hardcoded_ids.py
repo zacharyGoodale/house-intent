@@ -32,7 +32,7 @@ def test_no_entity_id_literals_in_src():
 
 
 def test_no_area_or_friendly_names_from_the_fixture_in_src():
-    fixture = json.loads((ROOT / "fixtures" / "ha_snapshot.json").read_text())
+    fixture = json.loads((ROOT / "demo" / "ha_snapshot.json").read_text())
     names = {a["name"] for a in fixture["areas"]}
     names |= {e["friendly_name"] for e in fixture["entities"] if e.get("friendly_name")}
     names = {n.strip() for n in names if len(n.strip()) >= 3}
@@ -57,7 +57,8 @@ import tomllib  # noqa: E402
 
 GENERIC_WORDS = {"room", "light", "lights", "lamp", "home", "front", "mode", "scene", "list", "shopping", "music",
                  "speaker", "alarm", "sunrise", "routine", "timer", "white", "evening", "night", "morning", "day",
-                 "wake", "news", "podcast", "movie", "bed", "blinds", "shades", "coffee", "machine", "mirror", "temperature", "thermostat", "air conditioning", "room temperature"}
+                 "wake", "news", "podcast", "movie", "bed", "blinds", "shades", "coffee", "machine", "mirror", "temperature", "thermostat", "air conditioning", "room temperature",
+                 "heater"}
 MORE_DOMAINS = ("fan|climate|input_boolean|input_select|alarm_control_panel|remote|vacuum|valve|humidifier|"
                 "device_tracker|camera|number|select|update")
 ID_PATTERN_WIDE = re.compile(
@@ -70,7 +71,7 @@ CONCAT = re.compile(rf"[\"']\b(light|switch|cover|media_player|scene|script|auto
 def _house_vocabulary() -> set[str]:
     """Names the router must never know: config aliases (keys and values), presets, area ids and names (and their
     distinctive words), fixture friendly names and every seed overlay's names."""
-    scope = tomllib.loads((ROOT / "config" / "scope.toml").read_text())
+    scope = tomllib.loads((ROOT / "demo" / "config" / "scope.toml").read_text())
     out: set[str] = set()
     for key, values in (scope.get("aliases") or {}).items():
         out.update(values)
@@ -80,7 +81,7 @@ def _house_vocabulary() -> set[str]:
         out.add(p["name"])
         out.update(p.get("aliases") or [])
         out.add(p["id"])
-    fixture = json.loads((ROOT / "fixtures" / "ha_snapshot.json").read_text())
+    fixture = json.loads((ROOT / "demo" / "ha_snapshot.json").read_text())
     for a in fixture["areas"]:
         out.update({a["id"], a["name"]})
         out.update(w for w in re.findall(r"[A-Za-z]{4,}", a["name"]) if w.casefold() not in GENERIC_WORDS)

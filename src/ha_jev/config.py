@@ -1,4 +1,10 @@
-"""Settings from config/{scope,safety,ha_jev}.toml plus env; the opt-in dev env loader (spec §10)."""
+"""Settings from an optional config directory plus env; the opt-in dev env loader (spec §10).
+
+Every file in the directory is optional: a home with none runs on Home Assistant's own areas, Assist exposure and
+aliases, with the safety rules below. The files only override (ha_jev.toml, scope.toml, safety.toml, people.toml)
+or extend (capabilities.toml) those defaults. The directory is the first of: the explicit argument,
+$HA_JEV_CONFIG_DIR, ~/.config/ha-jev/config (when it exists). The fictional demo home's config lives in
+demo/config and goes with StubHA and the eval set."""
 
 from __future__ import annotations
 
@@ -14,7 +20,9 @@ from ha_jev.capabilities import CapabilityError, CapabilityTable, rows_from_conf
 from ha_jev.models import ServiceCall
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_CONFIG_DIR = REPO_ROOT / "config"
+DEMO_CONFIG_DIR = REPO_ROOT / "demo" / "config"
+USER_CONFIG_DIR = Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config") / "ha-jev" / "config"
+CONFIG_FILES = ("ha_jev.toml", "scope.toml", "safety.toml", "people.toml", "capabilities.toml")
 DEV_ENV_WHITELIST = ("TYPESAFE_API_KEY", "OPENAI_API_KEY", "HA_URL", "HA_TOKEN", "HA_JEV_ALLOW_REAL",
                      "HERMES_API_KEY", "HERMES_API_KEY_FILE", "HERMES_BASE_URL")
 CALENDAR_SHARES = ("household", "titles_private", "private")
@@ -168,12 +176,21 @@ class ScopeConfig:
 
 @dataclass(frozen=True)
 class SafetyConfig:
-    denied_domains: list[str] = field(default_factory=list)
-    denied_cover_device_classes: list[str] = field(default_factory=list)
-    allowed_cover_device_classes: list[str] = field(default_factory=list)
+    """The denylist (decisions 3, 5, 6). These defaults are the safe baseline; safety.toml replaces a field
+    wholesale, so a home that sets `denied_domains` lists every domain it wants denied."""
+    denied_domains: list[str] = field(default_factory=lambda: ["lock", "alarm_control_panel", "button"])
+    # Covers: controllable only when the device_class is allowed; an unset device_class is refused.
+    denied_cover_device_classes: list[str] = field(default_factory=lambda: ["garage", "gate", "door"])
+    allowed_cover_device_classes: list[str] = field(
+        default_factory=lambda: ["awning", "blind", "curtain", "shade", "shutter", "window"])
     denied_entities: list[str] = field(default_factory=list)
-    denied_name_pattern: str = r"(?i)\b(un)?lock(s|ed|ing)?\b"
-    security_area_pattern: str = r"(?i)\bgarage\b|\bgate\b"
+    # Covers, switches, scripts, scenes, automations and presets whose id or name says they secure the home.
+    denied_name_pattern: str = (
+        r"(?i)\b(un)?lock(s|ed|ing)?\b|\bdead ?bolts?\b|\bdisarm(s|ed|ing)?\b|\bgates?\b|\bdoors?\b"
+        r"|\bstrikes?\b|\b(un)?latch(es|ed|ing)?\b|\bopeners?\b|\bbuzz(er|ers)?\b|\brelease\b|\bentry\b"
+        r"|\bentrance\b")
+    # A cover in an area named like this is refused even with an allowed device_class.
+    security_area_pattern: str = r"(?i)\bgarage\b|\bgate\b|\bdriveway\b|\bcarport\b"
     allowed_entities: list[str] = field(default_factory=list)
 
 
@@ -215,7 +232,7 @@ class Settings:
     replies: ReplySettings
     scope: ScopeConfig
     safety: SafetyConfig
-    config_dir: Path
+    config_dir: Path | None  # None: built-in defaults only
     capabilities: CapabilityTable = DEFAULT_TABLE
     people: dict[str, Person] = field(default_factory=dict)
     memory: MemorySettings = field(default_factory=MemorySettings)
@@ -230,6 +247,27 @@ class Settings:
             return self
         scope = replace(self.scope, include=[*self.scope.include, *include], exclude=[*self.scope.exclude, *exclude])
         return replace(self, scope=scope)
+
+
+def resolve_config_dir(config_dir: str | Path | None = None, *, demo: bool = False) -> Path | None:
+    """The config directory: explicit, else $HA_JEV_CONFIG_DIR, else the demo's (with `demo`, for StubHA and the
+    eval set) or ~/.config/ha-jev/config when it exists. None means built-in defaults. A named directory that
+    doesn't exist is an error, so a typo never silently runs on defaults."""
+    named = config_dir or os.environ.get("HA_JEV_CONFIG_DIR")
+    if named:
+        path = Path(os.path.expanduser(str(named)))
+        if not path.is_dir():
+            raise ConfigError(f"config directory not found: {path}")
+        return path
+    if demo:
+        return DEMO_CONFIG_DIR
+    return USER_CONFIG_DIR if USER_CONFIG_DIR.is_dir() else None
+
+
+def _read_optional(directory: Path | None, name: str) -> dict[str, Any]:
+    if directory is None or not (directory / name).is_file():
+        return {}
+    return _read_toml(directory / name)
 
 
 def _read_toml(path: Path) -> dict[str, Any]:
@@ -323,22 +361,19 @@ def _set_dotted(settings: Settings, key: str, value: Any) -> Settings:
     return replace(settings, **{head: set_in(getattr(settings, head), rest)})
 
 
-def load_settings(config_dir: str | Path | None = None, overrides: dict[str, Any] | None = None) -> Settings:
+def load_settings(config_dir: str | Path | None = None, overrides: dict[str, Any] | None = None, *,
+                  demo: bool = False) -> Settings:
     from ha_jev.safety import validate_preset  # local import: safety depends on config types
 
-    directory = Path(config_dir or os.environ.get("HA_JEV_CONFIG_DIR") or DEFAULT_CONFIG_DIR)
-    main = _read_toml(directory / "ha_jev.toml")
-    scope = _parse_scope(_read_toml(directory / "scope.toml"))
-    safety = _build(SafetyConfig, _read_toml(directory / "safety.toml"), "safety")
-    table = DEFAULT_TABLE
-    extra = directory / "capabilities.toml"
-    if extra.is_file():  # decision 9: a new domain is one row, in config
-        try:
-            table = DEFAULT_TABLE.extend(rows_from_config(_read_toml(extra).get("domains") or []))
-        except CapabilityError as e:
-            raise ConfigError(f"capabilities.toml: {e}") from e
-    people_file = directory / "people.toml"
-    people = _parse_people(_read_toml(people_file)) if people_file.is_file() else {}
+    directory = resolve_config_dir(config_dir, demo=demo)
+    main = _read_optional(directory, "ha_jev.toml")
+    scope = _parse_scope(_read_optional(directory, "scope.toml"))
+    safety = _build(SafetyConfig, _read_optional(directory, "safety.toml"), "safety")
+    try:  # decision 9: a new domain is one row, in config
+        table = DEFAULT_TABLE.extend(rows_from_config(_read_optional(directory, "capabilities.toml").get("domains") or []))
+    except CapabilityError as e:
+        raise ConfigError(f"capabilities.toml: {e}") from e
+    people = _parse_people(_read_optional(directory, "people.toml"))
     ha = main.get("ha") or {}
     settings = Settings(
         jev=_build(JevSettings, main.get("jev"), "jev"),

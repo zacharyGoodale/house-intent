@@ -2,7 +2,7 @@
 
 ## Configure a real home
 
-1. Create a private directory outside the checkout and copy the TOML templates from `config/` into it. Set `HA_JEV_CONFIG_DIR` to that directory. Replace the fictional entity includes, aliases, defaults, and presets with the entities you want to expose. Remove the demo speaker profiles or replace them with your own.
+1. In Home Assistant, put your devices in areas (and areas on floors), and expose to Assist the entities voice may control. That is all House Intent needs. Optional overrides go in `~/.config/ha-jev/config/` or the directory in `HA_JEV_CONFIG_DIR`; see the [configuration guide](configuration.md).
 2. For direct CLI access, set `HA_URL`, `HA_TOKEN`, `HA_JEV_ALLOW_REAL=1`, and `TYPESAFE_API_KEY` in your private environment. Start the CLI with `--ha real` after checking scope and safety.
 3. To load variables from a local file for development, set `HA_JEV_DEV_ENV` to its path. Keep provider keys and Home Assistant tokens in that file or your normal secret store.
 
@@ -17,7 +17,3 @@ Run the systemd installer as an administrator, with the account that owns the ch
     sudo bash deploy/install-system-service.sh --user hauser --repo-dir /srv/ha-jev
 
 The bridge listens on loopback. Put the Caddy CA certificate reported by the installer into the trusted CA configuration for the HA integration. For a manual deployment, run `uv run ha-jev-server --help` and provide the private user map and configuration directory. Terminate TLS before accepting requests from another machine.
-
-## Optional PTAC thermostat adapter
-
-The `config/home-assistant/` directory contains examples for a Home Assistant climate adapter over an ESPHome power switch, target-temperature number, and operating-mode selector. Copy the `ptac_climate` custom component and adapt the example YAML prefixes to match your source entities. Expose the resulting climate entity deliberately through the interfaces you use. The adapter reports the last infrared command and has no measured room-temperature input. See `scripts/configure_ptac_homekit.py --help` for optional, authenticated HomeKit Bridge configuration. Use the repeatable thermostat and legacy-prefix options for your own entities.

@@ -9,7 +9,7 @@ Clone the repository and run these commands from the checkout. You need Python 3
     uv sync --locked
     uv run pytest
 
-The default test suite uses fictional fixtures and fake clients. Set `TYPESAFE_API_KEY` in your environment to try these CLI examples.
+The default test suite uses the fictional demo home in `demo/` and fake clients. Set `TYPESAFE_API_KEY` in your environment to try these CLI examples.
 
     uv run ha-jev ask "turn on the living room lights" --area living_room --no-llm
     uv run ha-jev ask "what's on my calendar today" --person riley --no-llm
@@ -19,7 +19,7 @@ These commands use StubHA, an in-memory Home Assistant demo. `--no-llm` disables
 
 ## Connect Home Assistant
 
-Use a copy of `config/` outside the checkout for your own entity scope, safety rules, and optional speaker profiles. See the [Home Assistant setup guide](docs/home-assistant.md) for real-HA access, the authenticated voice bridge, and the thermostat adapter. See the [usage guide](docs/usage.md) for routing, optional backends, and local data.
+House Intent reads your home from Home Assistant: areas are rooms, floors group them, and the entities you expose to Assist are what voice can control. It needs no config files. Add optional overrides in `~/.config/ha-jev/config/` for extra names, per-room defaults, household members, safety additions, or new device kinds. See the [configuration guide](docs/configuration.md). See the [Home Assistant setup guide](docs/home-assistant.md) for real-HA access and the authenticated voice bridge. See the [usage guide](docs/usage.md) for routing, optional backends, and local data.
 
 ## Evaluate
 
@@ -32,5 +32,5 @@ The validator runs offline. The CLI eval calls Jev against the fictional home an
 
 - `src/ha_jev/` holds the router, policy, CLI, and bridge.
 - `custom_components/ha_jev/` provides Home Assistant conversation, STT, TTS, and schedules.
-- `config/` and `fixtures/` supply public demo configuration and fictional data.
+- `demo/` is the fictional demo home: its registry snapshot, states and `config/`, used by StubHA, tests and eval.
 - `tests/` and `eval/` exercise routing, safety, and integration behavior.

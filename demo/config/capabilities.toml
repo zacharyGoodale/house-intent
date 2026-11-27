@@ -1,0 +1,25 @@
+# Extending the capability table without code (decision 9): one row per domain. Built-in rows (lights, switches,
+# covers, media players, thermostats, ...) live in src/ha_jev/capabilities.py; a row here adds a domain or replaces
+# a built-in one. The demo home's only `select` entities are its air conditioners' fan-speed selectors, so it
+# reads every select as one; a home with other selects would scope this row with scope.toml `exclude`.
+[[domains]]
+domain = "select"
+kind = "air conditioner fan speed"
+device_type = "hvac_setting"
+device_type_description = "AC fan speed (auto, low, high); operating mode belongs to the thermostat"
+action_question = "hvac_setting_action"
+action_instructions = "Which AC fan speed is requested in {u}? Heat, cool, fan-only, and off belong to the thermostat."
+target_option = true
+mention = true
+[domains.actions.auto]
+service = "select_option"
+description = "automatic fan speed"
+data = {option = "Auto"}
+[domains.actions.low]
+service = "select_option"
+description = "low fan speed"
+data = {option = "Low"}
+[domains.actions.high]
+service = "select_option"
+description = "high fan speed"
+data = {option = "High"}

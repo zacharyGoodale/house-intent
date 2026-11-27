@@ -34,7 +34,7 @@ def test_unknown_override_key_is_a_config_error():
 
 def test_config_dir_env_override(tmp_path, monkeypatch):
     for name in ("scope.toml", "safety.toml", "ha_jev.toml"):
-        shutil.copy(ROOT / "config" / name, tmp_path / name)
+        shutil.copy(ROOT / "demo" / "config" / name, tmp_path / name)
     text = (tmp_path / "ha_jev.toml").read_text().replace("act = 0.70", "act = 0.75")
     (tmp_path / "ha_jev.toml").write_text(text)
     monkeypatch.setenv("HA_JEV_CONFIG_DIR", str(tmp_path))
@@ -43,7 +43,7 @@ def test_config_dir_env_override(tmp_path, monkeypatch):
 
 def _write_scope_with_preset(tmp_path, call: str):
     for name in ("safety.toml", "ha_jev.toml"):
-        shutil.copy(ROOT / "config" / name, tmp_path / name)
+        shutil.copy(ROOT / "demo" / "config" / name, tmp_path / name)
     (tmp_path / "scope.toml").write_text(
         'include_exposed = true\ninclude = []\nexclude = []\n[[presets]]\nid = "bad"\nname = "Bad"\n'
         f"calls = [{call}]\n"
@@ -107,7 +107,7 @@ def test_people_load_from_people_toml():
 
 def test_people_file_is_optional_and_validated(tmp_path):
     for name in ("scope.toml", "safety.toml", "ha_jev.toml"):
-        shutil.copy(ROOT / "config" / name, tmp_path / name)
+        shutil.copy(ROOT / "demo" / "config" / name, tmp_path / name)
     assert load_settings(config_dir=tmp_path).people == {}
     (tmp_path / "people.toml").write_text('[people.x]\nname = "X"\ntemperature_unit = "K"\n')
     with pytest.raises(ConfigError):

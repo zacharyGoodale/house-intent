@@ -12,15 +12,19 @@ import re
 import unicodedata
 from collections.abc import Mapping, Sequence
 from datetime import datetime
+from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
-from ha_jev.ha.interface import Area, Device, EntityEntry, EntityState, HAError, Registry, effective_area
+from ha_jev.capabilities import features_from_bits
+from ha_jev.ha.interface import (Area, Device, EntityEntry, EntityState, HAError, Registry, effective_area,
+                                 floor_names_by_id)
 from ha_jev.models import ReadCall, ServiceCall
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-FIXTURE_PATH = REPO_ROOT / "fixtures" / "ha_snapshot.json"
-STUB_STATE_PATH = REPO_ROOT / "fixtures" / "stub_state.json"
+DEMO_DIR = REPO_ROOT / "demo"  # the fictional demo home: registry snapshot, stub state and its config/
+FIXTURE_PATH = DEMO_DIR / "ha_snapshot.json"
+STUB_STATE_PATH = DEMO_DIR / "stub_state.json"
 
 _FIXTURE_CACHE: dict[Path, Any] = {}
 
@@ -70,6 +74,10 @@ def _words(s: str) -> list[str]:
     s = unicodedata.normalize("NFKD", s or "")
     s = "".join(c for c in s if not unicodedata.combining(c)).casefold().replace("&", " and ")
     return [w for w in re.findall(r"[\w+]+", s) if w != "the"]
+
+
+def _area(a: Mapping[str, Any], floors: Mapping[str, tuple[str, ...]]) -> Area:
+    return Area(a["id"], a["name"], tuple(a.get("aliases") or ()), floors.get(a.get("floor_id"), ()))
 
 
 def _entry_from_fixture(e: Mapping[str, Any]) -> EntityEntry:
@@ -152,7 +160,8 @@ class StubHA:
     ) -> StubHA:
         fixture = _load_json(fixture_path)
         stub = _load_json(stub_state_path)
-        areas = {a["id"]: Area(a["id"], a["name"], tuple(a.get("aliases") or ())) for a in fixture["areas"]}
+        floors = floor_names_by_id(fixture.get("floors") or [])
+        areas = {a["id"]: _area(a, floors) for a in fixture["areas"]}
         devices = {d["id"]: Device(d["id"], d.get("name") or d["id"], d.get("area_id"), d.get("manufacturer"), d.get("model"))
                    for d in fixture["devices"]}
         entities: dict[str, EntityEntry] = {}
@@ -192,6 +201,10 @@ class StubHA:
 
         clock = now or stub.get("clock")
         when = datetime.fromisoformat(clock) if isinstance(clock, str) else clock
+        for eid, entry in entities.items():  # like RealHA: features come from supported_features unless given
+            bits = (states[eid].attributes.get("supported_features") if eid in states else None) or 0
+            if not entry.features and bits:
+                entities[eid] = replace(entry, features=frozenset(features_from_bits(entry.domain, int(bits))))
         registry = Registry(areas=areas, devices=devices, entities=entities)
         return cls(registry, states, todo, forecasts, when, scope, events, library)
 
@@ -202,7 +215,7 @@ class StubHA:
         for a in ov.get("areas", []) or []:
             if "id" not in a or "name" not in a:
                 raise OverlayError(f"overlay area needs id and name: {a}")
-            areas[a["id"]] = Area(a["id"], a["name"], tuple(a.get("aliases") or ()))
+            areas[a["id"]] = _area(a, floor_names_by_id(ov.get("floors") or []))
         for d in ov.get("devices", []) or []:
             if "id" not in d:
                 raise OverlayError(f"overlay device needs id: {d}")

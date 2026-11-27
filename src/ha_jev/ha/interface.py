@@ -16,6 +16,18 @@ class Area:
     id: str
     name: str
     aliases: tuple[str, ...] = ()
+    # The name and aliases of the HA floor the area is on: "upstairs" names every area on that floor.
+    floor_names: tuple[str, ...] = ()
+
+
+def floor_names_by_id(floors: Sequence[Mapping[str, Any]]) -> dict[str, tuple[str, ...]]:
+    """HA floor registry entries (`floor_id`, `name`, `aliases`) -> each floor's spoken names."""
+    out = {}
+    for f in floors:
+        fid = f.get("floor_id") or f.get("id")
+        if fid:
+            out[fid] = tuple(n for n in (f.get("name"), *(f.get("aliases") or ())) if n)
+    return out
 
 
 @dataclass(frozen=True)

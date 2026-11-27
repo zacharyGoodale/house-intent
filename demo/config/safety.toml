@@ -1,0 +1,3 @@
+# The demo home's safety additions. The general rules (lock, alarm and button domains; garage, gate and door
+# covers; the security name and area patterns) are built in: see SafetyConfig in src/ha_jev/config.py.
+denied_entities = ["lock.entry_lock", "script.toggle_entry_lock", "button.entry_signal"]
