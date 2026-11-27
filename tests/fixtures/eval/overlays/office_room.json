@@ -1,0 +1,8 @@
+{"description": "test copy of the office seed overlay",
+ "areas": [{"id": "office", "name": "Office", "aliases": []}],
+ "devices": [{"id": "dev_office_group", "name": "Office", "area_id": "office"}],
+ "entities": [
+   {"entity_id": "light.desk_lamp", "friendly_name": "Desk Lamp", "area_id": "office", "capabilities": {"supported_color_modes": ["color_temp", "xy"]}},
+   {"entity_id": "light.office", "friendly_name": "Office", "area_id": "office", "device_id": "dev_office_group", "capabilities": {"supported_color_modes": ["color_temp", "xy"]}}],
+ "states": {"light.office": {"state": "off", "attributes": {"entity_id": ["light.desk_lamp"]}}},
+ "remove": [], "scope": {"include": [], "exclude": []}}

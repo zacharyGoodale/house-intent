@@ -1,0 +1,11 @@
+{
+  "description": "A new Hue zone 'Island' in the existing Kitchen whose members are the two Pendant halves (spec §11.2 seed)",
+  "areas": [],
+  "devices": [{"id": "dev_kitchen_island_group", "name": "Island", "area_id": "kitchen", "manufacturer": "Signify", "model": "Zone"}],
+  "entities": [
+    {"entity_id": "light.kitchen_island", "friendly_name": "Island", "area_id": "kitchen", "device_id": "dev_kitchen_island_group",
+     "capabilities": {"supported_color_modes": ["color_temp", "xy"], "min_color_temp_kelvin": 2000, "max_color_temp_kelvin": 6535}}
+  ],
+  "states": {"light.kitchen_island": {"state": "off", "attributes": {"entity_id": ["light.pendant_upper", "light.pendant_lower"]}}},
+  "remove": [], "scope": {"include": [], "exclude": []}
+}

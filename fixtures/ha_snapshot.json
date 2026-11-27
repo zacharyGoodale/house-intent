@@ -1,0 +1,1090 @@
+{
+  "meta": {
+    "description": "Fictional registry for StubHA and the test suite."
+  },
+  "areas": [
+    {
+      "id": "living_room",
+      "name": "Living Room",
+      "aliases": [
+        "lounge"
+      ]
+    },
+    {
+      "id": "kitchen",
+      "name": "Kitchen",
+      "aliases": []
+    },
+    {
+      "id": "bedroom",
+      "name": "Bedroom",
+      "aliases": []
+    },
+    {
+      "id": "bathroom",
+      "name": "Bathroom",
+      "aliases": []
+    },
+    {
+      "id": "front",
+      "name": "Entryway",
+      "aliases": [
+        "front"
+      ]
+    }
+  ],
+  "devices": [
+    {
+      "id": "demo-entry-device",
+      "name": "Demo Entry Monitor",
+      "area_id": "front"
+    }
+  ],
+  "entities": [
+    {
+      "entity_id": "automation.demo_morning_scene",
+      "friendly_name": "Bedroom Morning Scene",
+      "platform": "automation"
+    },
+    {
+      "entity_id": "binary_sensor.demo_bedroom_motion",
+      "friendly_name": "Bedroom Radio Motion",
+      "area_id": "bedroom",
+      "device_class": "motion",
+      "platform": "demo",
+      "exposed": true
+    },
+    {
+      "entity_id": "binary_sensor.entry_contact",
+      "friendly_name": "Entry Door Contact",
+      "area_id": "front",
+      "device_class": "door",
+      "device_id": "demo-entry-device",
+      "platform": "demo",
+      "exposed": true
+    },
+    {
+      "entity_id": "binary_sensor.reading_alcove_motion",
+      "friendly_name": "Alcove Radio Motion",
+      "area_id": "bedroom",
+      "device_class": "motion",
+      "platform": "demo",
+      "exposed": true
+    },
+    {
+      "entity_id": "button.entry_signal",
+      "friendly_name": "Entry Signal",
+      "area_id": "front",
+      "platform": "demo"
+    },
+    {
+      "entity_id": "cover.bedroom_shade",
+      "friendly_name": "Bedroom Shade",
+      "area_id": "bedroom",
+      "device_class": "shade",
+      "features": [
+        "open",
+        "close",
+        "set_position",
+        "stop"
+      ],
+      "platform": "demo",
+      "exposed": true
+    },
+    {
+      "entity_id": "light.alder",
+      "friendly_name": "Alder",
+      "area_id": "living_room",
+      "features": [
+        "effect",
+        "flash",
+        "transition"
+      ],
+      "platform": "hue",
+      "exposed": true,
+      "capabilities": {
+        "min_color_temp_kelvin": 2000,
+        "max_color_temp_kelvin": 6535,
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ]
+      }
+    },
+    {
+      "entity_id": "light.backlight_left",
+      "friendly_name": "Backlight 1",
+      "area_id": "living_room",
+      "features": [
+        "effect",
+        "flash",
+        "transition"
+      ],
+      "platform": "hue",
+      "exposed": true,
+      "capabilities": {
+        "min_color_temp_kelvin": 2000,
+        "max_color_temp_kelvin": 6535,
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ]
+      }
+    },
+    {
+      "entity_id": "light.backlight_right",
+      "friendly_name": "Backlight 2",
+      "area_id": "living_room",
+      "features": [
+        "effect",
+        "flash",
+        "transition"
+      ],
+      "platform": "hue",
+      "exposed": true,
+      "capabilities": {
+        "min_color_temp_kelvin": 2000,
+        "max_color_temp_kelvin": 6535,
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ]
+      }
+    },
+    {
+      "entity_id": "light.bathroom_group",
+      "friendly_name": "Bathroom",
+      "area_id": "bathroom",
+      "features": [
+        "flash",
+        "transition"
+      ],
+      "platform": "hue",
+      "exposed": true,
+      "capabilities": {
+        "min_color_temp_kelvin": 1000,
+        "max_color_temp_kelvin": 20000,
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ]
+      }
+    },
+    {
+      "entity_id": "light.bedroom_group",
+      "friendly_name": "Bedroom",
+      "area_id": "bedroom",
+      "features": [
+        "flash",
+        "transition"
+      ],
+      "platform": "hue",
+      "exposed": true,
+      "capabilities": {
+        "min_color_temp_kelvin": 2000,
+        "max_color_temp_kelvin": 6535,
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ]
+      }
+    },
+    {
+      "entity_id": "light.bedside_globe",
+      "friendly_name": "Globe Lamp",
+      "area_id": "bedroom",
+      "features": [
+        "effect",
+        "flash",
+        "transition"
+      ],
+      "platform": "hue",
+      "exposed": true,
+      "capabilities": {
+        "min_color_temp_kelvin": 2000,
+        "max_color_temp_kelvin": 6535,
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ]
+      }
+    },
+    {
+      "entity_id": "light.bookcase_light",
+      "friendly_name": "Bookcase Lamp",
+      "area_id": "bedroom",
+      "features": [
+        "effect",
+        "flash",
+        "transition"
+      ],
+      "platform": "hue",
+      "exposed": true,
+      "capabilities": {
+        "min_color_temp_kelvin": 2000,
+        "max_color_temp_kelvin": 6535,
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ]
+      }
+    },
+    {
+      "entity_id": "light.ceiling_light",
+      "friendly_name": "Ceiling light",
+      "area_id": "living_room",
+      "features": [
+        "effect",
+        "flash",
+        "transition"
+      ],
+      "platform": "hue",
+      "exposed": true,
+      "capabilities": {
+        "min_color_temp_kelvin": 2000,
+        "max_color_temp_kelvin": 6535,
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ]
+      }
+    },
+    {
+      "entity_id": "light.common_lights",
+      "friendly_name": "Common Area",
+      "area_id": "living_room",
+      "features": [
+        "flash",
+        "transition"
+      ],
+      "platform": "hue",
+      "exposed": true,
+      "capabilities": {
+        "min_color_temp_kelvin": 2000,
+        "max_color_temp_kelvin": 6535,
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ]
+      }
+    },
+    {
+      "entity_id": "light.corner_lamp",
+      "friendly_name": "corner lamp",
+      "area_id": "living_room",
+      "platform": "demo",
+      "exposed": true,
+      "capabilities": {
+        "supported_color_modes": [
+          "onoff"
+        ]
+      }
+    },
+    {
+      "entity_id": "light.fern_lamp",
+      "friendly_name": "Fern Light",
+      "area_id": "bedroom",
+      "features": [
+        "effect",
+        "flash",
+        "transition"
+      ],
+      "platform": "hue",
+      "exposed": true,
+      "capabilities": {
+        "min_color_temp_kelvin": 2000,
+        "max_color_temp_kelvin": 6535,
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ]
+      }
+    },
+    {
+      "entity_id": "light.kitchen_amber_lamp",
+      "friendly_name": "Amber Lamp",
+      "area_id": "kitchen",
+      "platform": "demo",
+      "exposed": true,
+      "capabilities": {
+        "supported_color_modes": [
+          "onoff"
+        ]
+      }
+    },
+    {
+      "entity_id": "light.mirror_strip",
+      "friendly_name": "Vanity Light",
+      "features": [
+        "effect",
+        "flash",
+        "transition"
+      ],
+      "area_id": "bathroom",
+      "platform": "hue",
+      "exposed": true,
+      "capabilities": {
+        "min_color_temp_kelvin": 1000,
+        "max_color_temp_kelvin": 20000,
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ]
+      }
+    },
+    {
+      "entity_id": "light.paper_lantern",
+      "friendly_name": "Paper Lantern Lamp",
+      "area_id": "living_room",
+      "features": [
+        "effect",
+        "flash",
+        "transition"
+      ],
+      "platform": "hue",
+      "exposed": true,
+      "capabilities": {
+        "min_color_temp_kelvin": 2000,
+        "max_color_temp_kelvin": 6535,
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ]
+      }
+    },
+    {
+      "entity_id": "light.pendant_lower",
+      "friendly_name": "Pendant Lower",
+      "area_id": "kitchen",
+      "features": [
+        "effect",
+        "flash",
+        "transition"
+      ],
+      "platform": "hue",
+      "exposed": true,
+      "capabilities": {
+        "min_color_temp_kelvin": 2000,
+        "max_color_temp_kelvin": 6535,
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ]
+      }
+    },
+    {
+      "entity_id": "light.pendant_upper",
+      "friendly_name": "Pendant Upper",
+      "area_id": "kitchen",
+      "features": [
+        "effect",
+        "flash",
+        "transition"
+      ],
+      "platform": "hue",
+      "exposed": true,
+      "capabilities": {
+        "min_color_temp_kelvin": 2000,
+        "max_color_temp_kelvin": 6535,
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ]
+      }
+    },
+    {
+      "entity_id": "light.reading_lamp",
+      "friendly_name": "Reading Lamp",
+      "area_id": "living_room",
+      "platform": "demo",
+      "exposed": true,
+      "capabilities": {
+        "supported_color_modes": [
+          "onoff"
+        ]
+      }
+    },
+    {
+      "entity_id": "light.ribbon_lamp",
+      "friendly_name": "Ribbon Lamp",
+      "area_id": "living_room",
+      "features": [
+        "effect",
+        "flash",
+        "transition"
+      ],
+      "platform": "hue",
+      "exposed": true,
+      "capabilities": {
+        "min_color_temp_kelvin": 2000,
+        "max_color_temp_kelvin": 6535,
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ]
+      }
+    },
+    {
+      "entity_id": "light.ring_lamp",
+      "friendly_name": "Ring Lamp",
+      "area_id": "living_room",
+      "platform": "demo",
+      "exposed": true,
+      "capabilities": {
+        "supported_color_modes": [
+          "onoff"
+        ]
+      }
+    },
+    {
+      "entity_id": "light.ring_lamp_duplicate",
+      "friendly_name": "Ring Lamp",
+      "area_id": "living_room",
+      "platform": "demo",
+      "capabilities": {
+        "supported_color_modes": [
+          "onoff"
+        ]
+      }
+    },
+    {
+      "entity_id": "lock.entry_lock",
+      "friendly_name": "Entry Door",
+      "area_id": "front",
+      "device_id": "demo-entry-device",
+      "platform": "demo"
+    },
+    {
+      "entity_id": "media_player.bedroom_speaker_duplicate",
+      "friendly_name": "Bedroom Speaker (Import)",
+      "area_id": "bedroom",
+      "device_class": "speaker",
+      "features": [
+        "volume_set",
+        "volume_mute",
+        "play_media",
+        "volume_step",
+        "stop"
+      ],
+      "platform": "demo",
+      "exposed": true
+    },
+    {
+      "entity_id": "media_player.demo_bedroom_radio",
+      "friendly_name": "Bedroom Radio",
+      "area_id": "bedroom",
+      "device_class": "speaker",
+      "features": [
+        "volume_set",
+        "volume_mute",
+        "play_media",
+        "volume_step",
+        "stop"
+      ],
+      "platform": "demo",
+      "exposed": true
+    },
+    {
+      "entity_id": "media_player.demo_bedroom_speaker",
+      "friendly_name": "Bedroom Speaker",
+      "area_id": "bedroom",
+      "device_class": "speaker",
+      "features": [
+        "pause",
+        "seek",
+        "volume_set",
+        "volume_mute",
+        "previous_track",
+        "next_track",
+        "play_media",
+        "stop",
+        "clear_playlist",
+        "play",
+        "shuffle_set",
+        "browse_media",
+        "repeat_set",
+        "grouping",
+        "media_announce",
+        "media_enqueue",
+        "search_media"
+      ],
+      "platform": "demo",
+      "exposed": true,
+      "unique_id": "demo-music-3"
+    },
+    {
+      "entity_id": "media_player.demo_soundbar",
+      "friendly_name": "Cedar Soundbar",
+      "area_id": "living_room",
+      "device_class": "speaker",
+      "features": [
+        "pause",
+        "seek",
+        "volume_set",
+        "volume_mute",
+        "previous_track",
+        "next_track",
+        "play_media",
+        "stop",
+        "clear_playlist",
+        "play",
+        "shuffle_set",
+        "browse_media",
+        "repeat_set",
+        "grouping",
+        "media_announce",
+        "media_enqueue",
+        "search_media"
+      ],
+      "platform": "demo",
+      "exposed": true,
+      "unique_id": "demo-music-1"
+    },
+    {
+      "entity_id": "media_player.demo_soundbar_duplicate",
+      "friendly_name": "Soundbar (Import)",
+      "area_id": "living_room",
+      "device_class": "speaker",
+      "features": [
+        "volume_set",
+        "volume_mute",
+        "play_media",
+        "volume_step",
+        "stop"
+      ],
+      "platform": "demo",
+      "exposed": true
+    },
+    {
+      "entity_id": "media_player.demo_stereo",
+      "friendly_name": "Stereo (Music)",
+      "area_id": "living_room",
+      "device_class": "speaker",
+      "features": [
+        "pause",
+        "seek",
+        "volume_set",
+        "volume_mute",
+        "previous_track",
+        "next_track",
+        "play_media",
+        "stop",
+        "clear_playlist",
+        "play",
+        "shuffle_set",
+        "browse_media",
+        "repeat_set",
+        "grouping",
+        "media_announce",
+        "media_enqueue",
+        "search_media"
+      ],
+      "platform": "demo",
+      "exposed": true,
+      "unique_id": "demo-music-2"
+    },
+    {
+      "entity_id": "media_player.demo_tv",
+      "friendly_name": "Demo TV",
+      "area_id": "living_room",
+      "features": [
+        "pause",
+        "seek",
+        "volume_set",
+        "previous_track",
+        "next_track",
+        "turn_on",
+        "turn_off",
+        "play_media",
+        "volume_step",
+        "select_source",
+        "stop",
+        "play",
+        "shuffle_set",
+        "browse_media",
+        "repeat_set"
+      ],
+      "platform": "demo",
+      "exposed": true,
+      "capabilities": {
+        "source_list": [
+          "App Store",
+          "Arcade",
+          "Music",
+          "Netflix",
+          "Photos",
+          "Search",
+          "Settings",
+          "TV",
+          "YouTube",
+          "Disney+",
+          "HBO Max"
+        ]
+      }
+    },
+    {
+      "entity_id": "media_player.reading_alcove_radio",
+      "friendly_name": "Alcove Radio",
+      "area_id": "bedroom",
+      "device_class": "speaker",
+      "features": [
+        "volume_set",
+        "volume_mute",
+        "play_media",
+        "volume_step",
+        "stop"
+      ],
+      "platform": "demo",
+      "exposed": true
+    },
+    {
+      "entity_id": "media_player.stereo_duplicate",
+      "friendly_name": "Stereo (Import)",
+      "area_id": "living_room",
+      "device_class": "speaker",
+      "features": [
+        "volume_set",
+        "volume_mute",
+        "play_media",
+        "volume_step",
+        "stop"
+      ],
+      "platform": "demo",
+      "exposed": true
+    },
+    {
+      "entity_id": "scene.demo_bath_concentrate",
+      "friendly_name": "Bathroom Concentrate",
+      "area_id": "bathroom",
+      "platform": "hue",
+      "exposed": true,
+      "state": "off"
+    },
+    {
+      "entity_id": "scene.demo_bath_nightlight",
+      "friendly_name": "Bathroom Nightlight",
+      "area_id": "bathroom",
+      "platform": "hue",
+      "exposed": true,
+      "state": "off"
+    },
+    {
+      "entity_id": "scene.demo_bath_read",
+      "friendly_name": "Bathroom Bathroom Day",
+      "area_id": "bathroom",
+      "platform": "hue",
+      "exposed": true,
+      "state": "off"
+    },
+    {
+      "entity_id": "scene.demo_bath_relax",
+      "friendly_name": "Bathroom Relax",
+      "area_id": "bathroom",
+      "platform": "hue",
+      "exposed": true,
+      "state": "off"
+    },
+    {
+      "entity_id": "scene.demo_bedroom_imported_scene",
+      "friendly_name": "Bedroom Imported Scene",
+      "area_id": "bedroom",
+      "platform": "hue",
+      "exposed": true,
+      "state": "off"
+    },
+    {
+      "entity_id": "scene.demo_bedroom_imported_scene_2",
+      "friendly_name": "Bedroom Imported Scene",
+      "area_id": "bedroom",
+      "platform": "hue",
+      "exposed": true,
+      "state": "off"
+    },
+    {
+      "entity_id": "scene.demo_bedroom_relax",
+      "friendly_name": "Bedroom Relax",
+      "area_id": "bedroom",
+      "platform": "hue",
+      "exposed": true,
+      "state": "off"
+    },
+    {
+      "entity_id": "scene.demo_bedroom_relax_alt",
+      "friendly_name": "Bedroom Relax (alternate)",
+      "area_id": "bedroom",
+      "platform": "hue",
+      "exposed": true,
+      "state": "off"
+    },
+    {
+      "entity_id": "scene.demo_bedroom_rolling_hills",
+      "friendly_name": "Bedroom Rolling hills",
+      "area_id": "bedroom",
+      "platform": "hue",
+      "exposed": true,
+      "state": "off"
+    },
+    {
+      "entity_id": "scene.demo_bedroom_wind_down",
+      "friendly_name": "Bedroom: Wind down",
+      "platform": "homeassistant",
+      "exposed": true,
+      "state": "off"
+    },
+    {
+      "entity_id": "scene.demo_common_concentrate",
+      "friendly_name": "Common Area Concentrate",
+      "area_id": "living_room",
+      "platform": "hue",
+      "exposed": true,
+      "state": "off"
+    },
+    {
+      "entity_id": "scene.demo_common_default",
+      "friendly_name": "Common Area default",
+      "area_id": "living_room",
+      "platform": "hue",
+      "exposed": true,
+      "state": "off"
+    },
+    {
+      "entity_id": "scene.demo_common_default_2",
+      "friendly_name": "Common Area Default",
+      "area_id": "living_room",
+      "platform": "hue",
+      "exposed": true,
+      "state": "off"
+    },
+    {
+      "entity_id": "scene.demo_common_energize",
+      "friendly_name": "Common Area Energize",
+      "area_id": "living_room",
+      "platform": "hue",
+      "exposed": true,
+      "state": "off"
+    },
+    {
+      "entity_id": "scene.demo_common_natural_light",
+      "friendly_name": "Common Area Natural light",
+      "area_id": "living_room",
+      "platform": "hue",
+      "exposed": true,
+      "state": "off"
+    },
+    {
+      "entity_id": "scene.demo_common_nightlight",
+      "friendly_name": "Common Area Nightlight",
+      "area_id": "living_room",
+      "platform": "hue",
+      "exposed": true,
+      "state": "off"
+    },
+    {
+      "entity_id": "scene.demo_common_read",
+      "friendly_name": "Common Area Day time",
+      "area_id": "living_room",
+      "platform": "hue",
+      "exposed": true,
+      "state": "off"
+    },
+    {
+      "entity_id": "scene.demo_common_relax",
+      "friendly_name": "Common Area Relax",
+      "area_id": "living_room",
+      "platform": "hue",
+      "exposed": true,
+      "state": "off"
+    },
+    {
+      "entity_id": "scene.demo_common_rest",
+      "friendly_name": "Common Area Rest",
+      "area_id": "living_room",
+      "platform": "hue",
+      "exposed": true,
+      "state": "off"
+    },
+    {
+      "entity_id": "scene.demo_common_rolling_hills",
+      "friendly_name": "Common Area Rolling hills",
+      "area_id": "living_room",
+      "platform": "hue",
+      "exposed": true,
+      "state": "off"
+    },
+    {
+      "entity_id": "scene.demo_living_evening",
+      "friendly_name": "Living: Evening",
+      "platform": "homeassistant",
+      "exposed": true,
+      "state": "off"
+    },
+    {
+      "entity_id": "scene.demo_living_wind_down",
+      "friendly_name": "Living: Wind down",
+      "platform": "homeassistant",
+      "exposed": true,
+      "state": "off"
+    },
+    {
+      "entity_id": "scene.demo_sleep_arise",
+      "friendly_name": "Bedroom Arise",
+      "area_id": "bedroom",
+      "platform": "hue",
+      "exposed": true,
+      "state": "off"
+    },
+    {
+      "entity_id": "scene.demo_sleep_golden_hours",
+      "friendly_name": "Bedroom Golden hours",
+      "area_id": "bedroom",
+      "platform": "hue",
+      "exposed": true,
+      "state": "off"
+    },
+    {
+      "entity_id": "scene.demo_sleep_nighttime",
+      "friendly_name": "Bedroom Nighttime",
+      "area_id": "bedroom",
+      "platform": "hue",
+      "exposed": true,
+      "state": "off"
+    },
+    {
+      "entity_id": "scene.demo_sleep_shine",
+      "friendly_name": "Bedroom Shine",
+      "area_id": "bedroom",
+      "platform": "hue",
+      "exposed": true,
+      "state": "off"
+    },
+    {
+      "entity_id": "scene.demo_sleep_sleepy",
+      "friendly_name": "Bedroom Sleepy",
+      "area_id": "bedroom",
+      "platform": "hue",
+      "exposed": true,
+      "state": "off"
+    },
+    {
+      "entity_id": "scene.demo_sleep_storybook",
+      "friendly_name": "Bedroom Storybook",
+      "area_id": "bedroom",
+      "platform": "hue",
+      "exposed": true,
+      "state": "off"
+    },
+    {
+      "entity_id": "scene.demo_sleep_unwind",
+      "friendly_name": "Bedroom Unwind",
+      "area_id": "bedroom",
+      "platform": "hue",
+      "exposed": true,
+      "state": "off"
+    },
+    {
+      "entity_id": "script.common_lights_off",
+      "friendly_name": "All off (Living + Kitchen)",
+      "platform": "script",
+      "state": "off"
+    },
+    {
+      "entity_id": "script.common_relax",
+      "friendly_name": "Relax (Living + Kitchen)",
+      "platform": "script",
+      "state": "off"
+    },
+    {
+      "entity_id": "script.demo_alarm_lights",
+      "friendly_name": "Alarm lights (whole home)",
+      "platform": "script",
+      "state": "off"
+    },
+    {
+      "entity_id": "script.demo_bedroom_bed",
+      "friendly_name": "Bedroom: Bed",
+      "platform": "script",
+      "state": "off"
+    },
+    {
+      "entity_id": "script.demo_bedroom_day",
+      "friendly_name": "Bedroom: Day",
+      "platform": "script",
+      "state": "off"
+    },
+    {
+      "entity_id": "script.demo_bedroom_evening",
+      "friendly_name": "Bedroom: Evening",
+      "platform": "script",
+      "state": "off"
+    },
+    {
+      "entity_id": "script.demo_bedroom_wind_down",
+      "friendly_name": "Bedroom: Wind down",
+      "platform": "script",
+      "state": "off"
+    },
+    {
+      "entity_id": "script.demo_living_day",
+      "friendly_name": "Living: Day",
+      "platform": "script",
+      "state": "off"
+    },
+    {
+      "entity_id": "script.demo_living_evening",
+      "friendly_name": "Living: Evening",
+      "platform": "script",
+      "state": "off"
+    },
+    {
+      "entity_id": "script.demo_living_wind_down",
+      "friendly_name": "Living: Wind down",
+      "platform": "script",
+      "state": "off"
+    },
+    {
+      "entity_id": "script.demo_movie_mode",
+      "friendly_name": "Living: Film",
+      "platform": "script",
+      "state": "off"
+    },
+    {
+      "entity_id": "script.play_morning_brief",
+      "friendly_name": "Play Morning Brief on the Stereo",
+      "platform": "script",
+      "state": "off"
+    },
+    {
+      "entity_id": "script.toggle_entry_lock",
+      "friendly_name": "Toggle Entry Lock",
+      "platform": "script",
+      "state": "off"
+    },
+    {
+      "entity_id": "sensor.demo_bedroom_radio_next_alarm",
+      "friendly_name": "Bedroom Radio Next alarm",
+      "area_id": "bedroom",
+      "device_class": "timestamp",
+      "platform": "demo"
+    },
+    {
+      "entity_id": "sensor.demo_bedroom_radio_next_timer",
+      "friendly_name": "Bedroom Radio Next timer",
+      "area_id": "bedroom",
+      "device_class": "timestamp",
+      "platform": "demo"
+    },
+    {
+      "entity_id": "switch.amber_lamp_plug",
+      "friendly_name": "Amber Lamp",
+      "area_id": "kitchen",
+      "platform": "demo",
+      "hidden_by": "demo"
+    },
+    {
+      "entity_id": "switch.corner_lamp_plug",
+      "friendly_name": "corner lamp",
+      "area_id": "living_room",
+      "platform": "demo",
+      "hidden_by": "demo"
+    },
+    {
+      "entity_id": "switch.demo_bedroom_radio_do_not_disturb",
+      "friendly_name": "Bedroom Radio Do not disturb",
+      "area_id": "bedroom",
+      "platform": "demo",
+      "exposed": true
+    },
+    {
+      "entity_id": "switch.demo_bedroom_speaker_do_not_disturb",
+      "friendly_name": "Bedroom Speaker Do not disturb",
+      "area_id": "bedroom",
+      "platform": "demo",
+      "exposed": true
+    },
+    {
+      "entity_id": "switch.demo_coffee_maker",
+      "friendly_name": "Espresso Machine",
+      "area_id": "kitchen",
+      "platform": "demo",
+      "exposed": true
+    },
+    {
+      "entity_id": "switch.demo_soundbar_do_not_disturb",
+      "friendly_name": "Soundbar Do not disturb",
+      "area_id": "living_room",
+      "platform": "demo",
+      "exposed": true
+    },
+    {
+      "entity_id": "switch.demo_stereo_do_not_disturb",
+      "friendly_name": "stereo Do not disturb",
+      "area_id": "living_room",
+      "platform": "demo",
+      "exposed": true
+    },
+    {
+      "entity_id": "switch.reading_alcove_radio_do_not_disturb",
+      "friendly_name": "Alcove Radio Do not disturb",
+      "area_id": "bedroom",
+      "platform": "demo",
+      "exposed": true
+    },
+    {
+      "entity_id": "switch.reading_lamp_plug",
+      "friendly_name": "Reading Lamp",
+      "area_id": "living_room",
+      "platform": "demo",
+      "hidden_by": "demo"
+    },
+    {
+      "entity_id": "switch.ring_lamp_plug",
+      "friendly_name": "Ring Lamp",
+      "area_id": "living_room",
+      "platform": "demo",
+      "hidden_by": "demo"
+    },
+    {
+      "entity_id": "todo.demo_shared_shopping",
+      "friendly_name": "Shared Shopping List",
+      "features": [
+        "create_item",
+        "delete_item",
+        "update_item"
+      ],
+      "platform": "demo",
+      "exposed": true
+    },
+    {
+      "entity_id": "todo.demo_shared_tasks",
+      "friendly_name": "Shared Tasks",
+      "features": [
+        "create_item",
+        "delete_item",
+        "update_item"
+      ],
+      "platform": "demo",
+      "exposed": true
+    },
+    {
+      "entity_id": "todo.shopping_list",
+      "friendly_name": "Shopping List",
+      "features": [
+        "create_item",
+        "delete_item",
+        "update_item",
+        "move_item"
+      ],
+      "platform": "demo",
+      "exposed": true
+    },
+    {
+      "entity_id": "weather.forecast_home",
+      "friendly_name": "Forecast Home",
+      "features": [
+        "forecast_daily",
+        "forecast_hourly"
+      ],
+      "platform": "demo"
+    }
+  ]
+}

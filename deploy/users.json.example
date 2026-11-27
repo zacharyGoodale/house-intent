@@ -1,0 +1,3 @@
+{
+  "REPLACE_WITH_HA_USER_ID": {"token_env": "HA_TOKEN_LOCAL_USER"}
+}

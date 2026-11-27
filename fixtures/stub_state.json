@@ -1,0 +1,1254 @@
+{
+  "description": "Fictional states, calendars, forecasts and media for the offline demo.",
+  "clock": "2037-09-22T18:00:00-04:00",
+  "timezone": "America/Barbados",
+  "registry_additions": [
+    {
+      "entity_id": "sun.sun",
+      "friendly_name": "Sun",
+      "area_id": null,
+      "exposed": false,
+      "platform": "sun"
+    },
+    {
+      "entity_id": "media_player.demo_soundbar_music",
+      "friendly_name": "Cedar Soundbar",
+      "area_id": null,
+      "exposed": false,
+      "platform": "music_assistant",
+      "device_class": "speaker",
+      "features": [
+        "pause",
+        "seek",
+        "volume_set",
+        "volume_mute",
+        "previous_track",
+        "next_track",
+        "turn_on",
+        "turn_off",
+        "play_media",
+        "volume_step",
+        "select_source",
+        "stop",
+        "clear_playlist",
+        "play",
+        "shuffle_set",
+        "browse_media",
+        "repeat_set",
+        "grouping",
+        "media_announce",
+        "media_enqueue",
+        "search_media"
+      ],
+      "capabilities": {
+        "source_list": [
+          "Spotify",
+          "Line-in"
+        ]
+      },
+      "unique_id": "demo-music-1"
+    },
+    {
+      "entity_id": "media_player.demo_stereo_music",
+      "friendly_name": "Stereo",
+      "area_id": null,
+      "exposed": false,
+      "platform": "music_assistant",
+      "device_class": "speaker",
+      "features": [
+        "pause",
+        "seek",
+        "volume_set",
+        "volume_mute",
+        "previous_track",
+        "next_track",
+        "turn_on",
+        "turn_off",
+        "play_media",
+        "volume_step",
+        "select_source",
+        "stop",
+        "clear_playlist",
+        "play",
+        "shuffle_set",
+        "browse_media",
+        "repeat_set",
+        "grouping",
+        "media_announce",
+        "media_enqueue",
+        "search_media"
+      ],
+      "capabilities": {
+        "source_list": [
+          "Spotify",
+          "Line-in"
+        ]
+      },
+      "unique_id": "demo-music-2"
+    },
+    {
+      "entity_id": "media_player.demo_bedroom_music",
+      "friendly_name": "Bedroom Speaker",
+      "area_id": null,
+      "exposed": false,
+      "platform": "music_assistant",
+      "device_class": "speaker",
+      "features": [
+        "pause",
+        "seek",
+        "volume_set",
+        "volume_mute",
+        "previous_track",
+        "next_track",
+        "turn_on",
+        "turn_off",
+        "play_media",
+        "volume_step",
+        "select_source",
+        "stop",
+        "clear_playlist",
+        "play",
+        "shuffle_set",
+        "browse_media",
+        "repeat_set",
+        "grouping",
+        "media_announce",
+        "media_enqueue",
+        "search_media"
+      ],
+      "capabilities": {
+        "source_list": [
+          "Spotify",
+          "Line-in"
+        ]
+      },
+      "unique_id": "demo-music-3"
+    },
+    {
+      "entity_id": "calendar.riley",
+      "friendly_name": "Riley",
+      "area_id": null,
+      "exposed": true,
+      "platform": "demo"
+    },
+    {
+      "entity_id": "calendar.morgan",
+      "friendly_name": "Morgan",
+      "area_id": null,
+      "exposed": true,
+      "platform": "demo"
+    }
+  ],
+  "states": {
+    "automation.demo_morning_scene": {
+      "state": "on",
+      "attributes": {
+        "friendly_name": "Bedroom Morning Scene"
+      }
+    },
+    "binary_sensor.demo_bedroom_motion": {
+      "state": "off",
+      "attributes": {
+        "device_class": "motion",
+        "friendly_name": "Bedroom Radio Motion"
+      }
+    },
+    "binary_sensor.entry_contact": {
+      "state": "off",
+      "attributes": {
+        "device_class": "door",
+        "friendly_name": "Entry Door Contact"
+      }
+    },
+    "binary_sensor.reading_alcove_motion": {
+      "state": "off",
+      "attributes": {
+        "device_class": "motion",
+        "friendly_name": "Alcove Radio Motion"
+      }
+    },
+    "calendar.morgan": {
+      "state": "off",
+      "attributes": {
+        "friendly_name": "Morgan"
+      }
+    },
+    "calendar.riley": {
+      "state": "off",
+      "attributes": {
+        "friendly_name": "Riley"
+      }
+    },
+    "cover.bedroom_shade": {
+      "state": "closed",
+      "attributes": {
+        "current_position": 0,
+        "device_class": "shade",
+        "friendly_name": "Bedroom Shade"
+      }
+    },
+    "light.alder": {
+      "state": "off",
+      "attributes": {
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ],
+        "min_color_temp_kelvin": 2000,
+        "max_color_temp_kelvin": 6535,
+        "friendly_name": "Alder"
+      }
+    },
+    "light.backlight_left": {
+      "state": "off",
+      "attributes": {
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ],
+        "min_color_temp_kelvin": 2000,
+        "max_color_temp_kelvin": 6535,
+        "friendly_name": "Backlight 1"
+      }
+    },
+    "light.backlight_right": {
+      "state": "off",
+      "attributes": {
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ],
+        "min_color_temp_kelvin": 2000,
+        "max_color_temp_kelvin": 6535,
+        "friendly_name": "Backlight 2"
+      }
+    },
+    "light.bathroom_group": {
+      "state": "off",
+      "attributes": {
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ],
+        "min_color_temp_kelvin": 1000,
+        "max_color_temp_kelvin": 20000,
+        "entity_id": [
+          "light.mirror_strip"
+        ],
+        "friendly_name": "Bathroom"
+      }
+    },
+    "light.bedroom_group": {
+      "state": "off",
+      "attributes": {
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ],
+        "min_color_temp_kelvin": 2000,
+        "max_color_temp_kelvin": 6535,
+        "entity_id": [
+          "light.bedside_globe",
+          "light.bookcase_light",
+          "light.fern_lamp"
+        ],
+        "friendly_name": "Bedroom"
+      }
+    },
+    "light.bedside_globe": {
+      "state": "off",
+      "attributes": {
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ],
+        "min_color_temp_kelvin": 2000,
+        "max_color_temp_kelvin": 6535,
+        "friendly_name": "Globe Lamp"
+      }
+    },
+    "light.bookcase_light": {
+      "state": "off",
+      "attributes": {
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ],
+        "min_color_temp_kelvin": 2000,
+        "max_color_temp_kelvin": 6535,
+        "friendly_name": "Bookcase Lamp"
+      }
+    },
+    "light.ceiling_light": {
+      "state": "off",
+      "attributes": {
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ],
+        "min_color_temp_kelvin": 2000,
+        "max_color_temp_kelvin": 6535,
+        "friendly_name": "Ceiling light"
+      }
+    },
+    "light.common_lights": {
+      "state": "off",
+      "attributes": {
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ],
+        "min_color_temp_kelvin": 2000,
+        "max_color_temp_kelvin": 6535,
+        "entity_id": [
+          "light.ceiling_light",
+          "light.alder",
+          "light.paper_lantern",
+          "light.ribbon_lamp",
+          "light.backlight_left",
+          "light.backlight_right",
+          "light.pendant_upper",
+          "light.pendant_lower"
+        ],
+        "friendly_name": "Common Area"
+      }
+    },
+    "light.corner_lamp": {
+      "state": "off",
+      "attributes": {
+        "supported_color_modes": [
+          "onoff"
+        ],
+        "friendly_name": "corner lamp"
+      }
+    },
+    "light.fern_lamp": {
+      "state": "off",
+      "attributes": {
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ],
+        "min_color_temp_kelvin": 2000,
+        "max_color_temp_kelvin": 6535,
+        "friendly_name": "Fern Light"
+      }
+    },
+    "light.kitchen_amber_lamp": {
+      "state": "off",
+      "attributes": {
+        "supported_color_modes": [
+          "onoff"
+        ],
+        "friendly_name": "Amber Lamp"
+      }
+    },
+    "light.mirror_strip": {
+      "state": "off",
+      "attributes": {
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ],
+        "min_color_temp_kelvin": 1000,
+        "max_color_temp_kelvin": 20000,
+        "friendly_name": "Vanity Light"
+      }
+    },
+    "light.paper_lantern": {
+      "state": "off",
+      "attributes": {
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ],
+        "min_color_temp_kelvin": 2000,
+        "max_color_temp_kelvin": 6535,
+        "friendly_name": "Paper Lantern Lamp"
+      }
+    },
+    "light.pendant_lower": {
+      "state": "off",
+      "attributes": {
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ],
+        "min_color_temp_kelvin": 2000,
+        "max_color_temp_kelvin": 6535,
+        "friendly_name": "Pendant Lower"
+      }
+    },
+    "light.pendant_upper": {
+      "state": "off",
+      "attributes": {
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ],
+        "min_color_temp_kelvin": 2000,
+        "max_color_temp_kelvin": 6535,
+        "friendly_name": "Pendant Upper"
+      }
+    },
+    "light.reading_lamp": {
+      "state": "off",
+      "attributes": {
+        "supported_color_modes": [
+          "onoff"
+        ],
+        "friendly_name": "Reading Lamp"
+      }
+    },
+    "light.ribbon_lamp": {
+      "state": "off",
+      "attributes": {
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ],
+        "min_color_temp_kelvin": 2000,
+        "max_color_temp_kelvin": 6535,
+        "friendly_name": "Ribbon Lamp"
+      }
+    },
+    "light.ring_lamp": {
+      "state": "off",
+      "attributes": {
+        "supported_color_modes": [
+          "onoff"
+        ],
+        "friendly_name": "Ring Lamp"
+      }
+    },
+    "light.ring_lamp_duplicate": {
+      "state": "off",
+      "attributes": {
+        "supported_color_modes": [
+          "onoff"
+        ],
+        "friendly_name": "Ring Lamp"
+      }
+    },
+    "lock.entry_lock": {
+      "state": "locked",
+      "attributes": {
+        "friendly_name": "Entry Door"
+      }
+    },
+    "media_player.bedroom_speaker_duplicate": {
+      "state": "idle",
+      "attributes": {
+        "volume_level": 0.3,
+        "is_volume_muted": false,
+        "device_class": "speaker",
+        "friendly_name": "Bedroom Speaker (Import)"
+      }
+    },
+    "media_player.demo_bedroom_music": {
+      "state": "idle",
+      "attributes": {
+        "volume_level": 0.3,
+        "is_volume_muted": false,
+        "friendly_name": "Bedroom Speaker"
+      }
+    },
+    "media_player.demo_bedroom_radio": {
+      "state": "idle",
+      "attributes": {
+        "volume_level": 0.3,
+        "is_volume_muted": false,
+        "device_class": "speaker",
+        "friendly_name": "Bedroom Radio"
+      }
+    },
+    "media_player.demo_bedroom_speaker": {
+      "state": "idle",
+      "attributes": {
+        "volume_level": 0.3,
+        "is_volume_muted": false,
+        "device_class": "speaker",
+        "friendly_name": "Bedroom Speaker"
+      }
+    },
+    "media_player.demo_soundbar": {
+      "state": "idle",
+      "attributes": {
+        "volume_level": 0.3,
+        "is_volume_muted": false,
+        "device_class": "speaker",
+        "friendly_name": "Cedar Soundbar"
+      }
+    },
+    "media_player.demo_soundbar_duplicate": {
+      "state": "idle",
+      "attributes": {
+        "volume_level": 0.3,
+        "is_volume_muted": false,
+        "device_class": "speaker",
+        "friendly_name": "Soundbar (Import)"
+      }
+    },
+    "media_player.demo_soundbar_music": {
+      "state": "idle",
+      "attributes": {
+        "volume_level": 0.3,
+        "is_volume_muted": false,
+        "friendly_name": "Cedar Soundbar"
+      }
+    },
+    "media_player.demo_stereo": {
+      "state": "idle",
+      "attributes": {
+        "volume_level": 0.3,
+        "is_volume_muted": false,
+        "device_class": "speaker",
+        "friendly_name": "Stereo (Music)"
+      }
+    },
+    "media_player.demo_stereo_music": {
+      "state": "idle",
+      "attributes": {
+        "volume_level": 0.3,
+        "is_volume_muted": false,
+        "friendly_name": "Stereo"
+      }
+    },
+    "media_player.demo_tv": {
+      "state": "off",
+      "attributes": {
+        "volume_level": 0.3,
+        "is_volume_muted": false,
+        "source": "TV",
+        "source_list": [
+          "App Store",
+          "Arcade",
+          "Music",
+          "Netflix",
+          "Photos",
+          "Search",
+          "Settings",
+          "TV",
+          "YouTube",
+          "Disney+",
+          "HBO Max"
+        ],
+        "friendly_name": "Demo TV"
+      }
+    },
+    "media_player.reading_alcove_radio": {
+      "state": "idle",
+      "attributes": {
+        "volume_level": 0.3,
+        "is_volume_muted": false,
+        "device_class": "speaker",
+        "friendly_name": "Alcove Radio"
+      }
+    },
+    "media_player.stereo_duplicate": {
+      "state": "idle",
+      "attributes": {
+        "volume_level": 0.3,
+        "is_volume_muted": false,
+        "device_class": "speaker",
+        "friendly_name": "Stereo (Import)"
+      }
+    },
+    "sensor.demo_bedroom_radio_next_alarm": {
+      "state": "2037-09-23T07:00:00-04:00",
+      "attributes": {
+        "device_class": "timestamp",
+        "friendly_name": "Bedroom Radio Next alarm"
+      }
+    },
+    "sensor.demo_bedroom_radio_next_timer": {
+      "state": "unknown",
+      "attributes": {
+        "device_class": "timestamp",
+        "friendly_name": "Bedroom Radio Next timer"
+      }
+    },
+    "sun.sun": {
+      "state": "above_horizon",
+      "attributes": {
+        "next_setting": "2037-09-22T19:02:00-04:00",
+        "next_rising": "2037-09-23T06:52:00-04:00",
+        "friendly_name": "Sun"
+      }
+    },
+    "switch.amber_lamp_plug": {
+      "state": "off",
+      "attributes": {
+        "friendly_name": "Amber Lamp"
+      }
+    },
+    "switch.corner_lamp_plug": {
+      "state": "off",
+      "attributes": {
+        "friendly_name": "corner lamp"
+      }
+    },
+    "switch.demo_bedroom_radio_do_not_disturb": {
+      "state": "off",
+      "attributes": {
+        "friendly_name": "Bedroom Radio Do not disturb"
+      }
+    },
+    "switch.demo_bedroom_speaker_do_not_disturb": {
+      "state": "off",
+      "attributes": {
+        "friendly_name": "Bedroom Speaker Do not disturb"
+      }
+    },
+    "switch.demo_coffee_maker": {
+      "state": "off",
+      "attributes": {
+        "friendly_name": "Espresso Machine"
+      }
+    },
+    "switch.demo_soundbar_do_not_disturb": {
+      "state": "off",
+      "attributes": {
+        "friendly_name": "Soundbar Do not disturb"
+      }
+    },
+    "switch.demo_stereo_do_not_disturb": {
+      "state": "off",
+      "attributes": {
+        "friendly_name": "stereo Do not disturb"
+      }
+    },
+    "switch.reading_alcove_radio_do_not_disturb": {
+      "state": "off",
+      "attributes": {
+        "friendly_name": "Alcove Radio Do not disturb"
+      }
+    },
+    "switch.reading_lamp_plug": {
+      "state": "off",
+      "attributes": {
+        "friendly_name": "Reading Lamp"
+      }
+    },
+    "switch.ring_lamp_plug": {
+      "state": "off",
+      "attributes": {
+        "friendly_name": "Ring Lamp"
+      }
+    },
+    "todo.demo_shared_shopping": {
+      "state": "0",
+      "attributes": {
+        "friendly_name": "Shared Shopping List"
+      }
+    },
+    "todo.demo_shared_tasks": {
+      "state": "0",
+      "attributes": {
+        "friendly_name": "Shared Tasks"
+      }
+    },
+    "todo.shopping_list": {
+      "state": "2",
+      "attributes": {
+        "friendly_name": "Shopping List"
+      }
+    },
+    "weather.forecast_home": {
+      "state": "partlycloudy",
+      "attributes": {
+        "temperature": 66,
+        "apparent_temperature": 65,
+        "humidity": 62,
+        "wind_speed": 7,
+        "temperature_unit": "°F",
+        "wind_speed_unit": "mph",
+        "friendly_name": "Forecast Home"
+      }
+    }
+  },
+  "todo_items": {
+    "todo.shopping_list": [
+      "eggs",
+      "coffee beans"
+    ],
+    "todo.demo_shared_shopping": [],
+    "todo.demo_shared_tasks": []
+  },
+  "forecasts": {
+    "weather.forecast_home": {
+      "daily": [
+        {
+          "datetime": "2037-09-22T00:00:00-04:00",
+          "condition": "partlycloudy",
+          "temperature": 70,
+          "templow": 55,
+          "precipitation_probability": 10
+        },
+        {
+          "datetime": "2037-09-23T00:00:00-04:00",
+          "condition": "rainy",
+          "temperature": 63,
+          "templow": 52,
+          "precipitation_probability": 80
+        },
+        {
+          "datetime": "2037-09-24T00:00:00-04:00",
+          "condition": "sunny",
+          "temperature": 72,
+          "templow": 54,
+          "precipitation_probability": 0
+        },
+        {
+          "datetime": "2037-09-25T00:00:00-04:00",
+          "condition": "cloudy",
+          "temperature": 68,
+          "templow": 56,
+          "precipitation_probability": 20
+        },
+        {
+          "datetime": "2037-09-26T00:00:00-04:00",
+          "condition": "sunny",
+          "temperature": 74,
+          "templow": 57,
+          "precipitation_probability": 0
+        }
+      ],
+      "hourly": [
+        {
+          "datetime": "2037-09-22T19:00:00-04:00",
+          "condition": "partlycloudy",
+          "temperature": 64,
+          "precipitation_probability": 5
+        },
+        {
+          "datetime": "2037-09-22T20:00:00-04:00",
+          "condition": "cloudy",
+          "temperature": 62,
+          "precipitation_probability": 10
+        },
+        {
+          "datetime": "2037-09-22T21:00:00-04:00",
+          "condition": "rainy",
+          "temperature": 60,
+          "precipitation_probability": 40
+        },
+        {
+          "datetime": "2037-09-22T22:00:00-04:00",
+          "condition": "rainy",
+          "temperature": 59,
+          "precipitation_probability": 60
+        },
+        {
+          "datetime": "2037-09-22T23:00:00-04:00",
+          "condition": "cloudy",
+          "temperature": 58,
+          "precipitation_probability": 20
+        },
+        {
+          "datetime": "2037-09-23T00:00:00-04:00",
+          "condition": "cloudy",
+          "temperature": 57,
+          "precipitation_probability": 10
+        }
+      ]
+    }
+  },
+  "calendar_events": {
+    "calendar.riley": [
+      {
+        "summary": "Standup",
+        "start": "2037-09-22T09:00:00-04:00",
+        "end": "2037-09-22T09:30:00-04:00"
+      },
+      {
+        "summary": "Workshop",
+        "start": "2037-09-22T14:30:00-04:00",
+        "end": "2037-09-22T15:30:00-04:00"
+      },
+      {
+        "summary": "Neighborhood Potluck",
+        "start": "2037-09-22T19:00:00-04:00",
+        "end": "2037-09-22T21:00:00-04:00"
+      },
+      {
+        "summary": "Community Fair",
+        "start": "2037-09-23",
+        "end": "2037-09-24"
+      },
+      {
+        "summary": "Design review",
+        "start": "2037-09-23T10:00:00-04:00",
+        "end": "2037-09-23T11:00:00-04:00"
+      },
+      {
+        "summary": "Book club",
+        "start": "2037-09-24T18:30:00-04:00",
+        "end": "2037-09-24T20:00:00-04:00"
+      },
+      {
+        "summary": "Farmers market",
+        "start": "2037-09-26T11:00:00-04:00",
+        "end": "2037-09-26T12:00:00-04:00"
+      }
+    ],
+    "calendar.morgan": [
+      {
+        "summary": "Gym",
+        "start": "2037-09-22T08:00:00-04:00",
+        "end": "2037-09-22T09:00:00-04:00"
+      },
+      {
+        "summary": "Planning Call",
+        "start": "2037-09-22T15:00:00-04:00",
+        "end": "2037-09-22T16:00:00-04:00"
+      },
+      {
+        "summary": "Climbing",
+        "start": "2037-09-23T18:00:00-04:00",
+        "end": "2037-09-23T20:00:00-04:00"
+      },
+      {
+        "summary": "Library Concert",
+        "start": "2037-09-25T20:00:00-04:00",
+        "end": "2037-09-25T23:00:00-04:00"
+      },
+      {
+        "summary": "Farmers market",
+        "start": "2037-09-26T11:00:00-04:00",
+        "end": "2037-09-26T12:00:00-04:00"
+      },
+      {
+        "summary": "Park Picnic",
+        "start": "2037-09-27T13:00:00-04:00",
+        "end": "2037-09-27T15:00:00-04:00"
+      }
+    ]
+  },
+  "music_library": [
+    {
+      "media_type": "artist",
+      "name": "Taylor Swift",
+      "uri": "library://artist/demo-01",
+      "artists": []
+    },
+    {
+      "media_type": "artist",
+      "name": "Frank Ocean",
+      "uri": "library://artist/demo-02",
+      "artists": []
+    },
+    {
+      "media_type": "artist",
+      "name": "Adele",
+      "uri": "library://artist/demo-03",
+      "artists": []
+    },
+    {
+      "media_type": "artist",
+      "name": "The Beatles",
+      "uri": "library://artist/demo-04",
+      "artists": []
+    },
+    {
+      "media_type": "artist",
+      "name": "Miles Davis",
+      "uri": "library://artist/demo-05",
+      "artists": []
+    },
+    {
+      "media_type": "artist",
+      "name": "Queen",
+      "uri": "library://artist/demo-06",
+      "artists": []
+    },
+    {
+      "media_type": "artist",
+      "name": "Fleetwood Mac",
+      "uri": "library://artist/demo-07",
+      "artists": []
+    },
+    {
+      "media_type": "album",
+      "name": "Blonde",
+      "uri": "library://album/demo-08",
+      "artists": [
+        {
+          "name": "Frank Ocean"
+        }
+      ]
+    },
+    {
+      "media_type": "album",
+      "name": "Blond",
+      "uri": "library://album/demo-09",
+      "artists": [
+        {
+          "name": "Various Artists"
+        }
+      ]
+    },
+    {
+      "media_type": "album",
+      "name": "1989 (Taylor's Version)",
+      "uri": "library://album/demo-10",
+      "artists": [
+        {
+          "name": "Taylor Swift"
+        }
+      ]
+    },
+    {
+      "media_type": "album",
+      "name": "Abbey Road",
+      "uri": "library://album/demo-11",
+      "artists": [
+        {
+          "name": "The Beatles"
+        }
+      ]
+    },
+    {
+      "media_type": "album",
+      "name": "Kind of Blue",
+      "uri": "library://album/demo-12",
+      "artists": [
+        {
+          "name": "Miles Davis"
+        }
+      ]
+    },
+    {
+      "media_type": "album",
+      "name": "25",
+      "uri": "library://album/demo-13",
+      "artists": [
+        {
+          "name": "Adele"
+        }
+      ]
+    },
+    {
+      "media_type": "album",
+      "name": "Greatest Hits",
+      "uri": "library://album/demo-14",
+      "artists": [
+        {
+          "name": "Queen"
+        }
+      ]
+    },
+    {
+      "media_type": "album",
+      "name": "Greatest Hits",
+      "uri": "library://album/demo-15",
+      "artists": [
+        {
+          "name": "Fleetwood Mac"
+        }
+      ]
+    },
+    {
+      "media_type": "track",
+      "name": "Blonde",
+      "uri": "library://track/demo-16",
+      "artists": [
+        {
+          "name": "Alizée"
+        }
+      ]
+    },
+    {
+      "media_type": "track",
+      "name": "Hello",
+      "uri": "library://track/demo-17",
+      "artists": [
+        {
+          "name": "Adele"
+        }
+      ]
+    },
+    {
+      "media_type": "track",
+      "name": "Hello",
+      "uri": "library://track/demo-18",
+      "artists": [
+        {
+          "name": "Lionel Richie"
+        }
+      ]
+    },
+    {
+      "media_type": "track",
+      "name": "Shake It Off",
+      "uri": "library://track/demo-19",
+      "artists": [
+        {
+          "name": "Taylor Swift"
+        }
+      ]
+    },
+    {
+      "media_type": "track",
+      "name": "Anti-Hero",
+      "uri": "library://track/demo-20",
+      "artists": [
+        {
+          "name": "Taylor Swift"
+        }
+      ]
+    },
+    {
+      "media_type": "track",
+      "name": "Pink + White",
+      "uri": "library://track/demo-21",
+      "artists": [
+        {
+          "name": "Frank Ocean"
+        }
+      ]
+    },
+    {
+      "media_type": "track",
+      "name": "Bohemian Rhapsody",
+      "uri": "library://track/demo-22",
+      "artists": [
+        {
+          "name": "Queen"
+        }
+      ]
+    },
+    {
+      "media_type": "track",
+      "name": "So What",
+      "uri": "library://track/demo-23",
+      "artists": [
+        {
+          "name": "Miles Davis"
+        }
+      ]
+    },
+    {
+      "media_type": "track",
+      "name": "Here Comes the Sun",
+      "uri": "library://track/demo-24",
+      "artists": [
+        {
+          "name": "The Beatles"
+        }
+      ]
+    },
+    {
+      "media_type": "playlist",
+      "name": "Jazz Classics",
+      "uri": "library://playlist/demo-25",
+      "artists": [
+        {
+          "name": "Spotify"
+        }
+      ]
+    },
+    {
+      "media_type": "playlist",
+      "name": "Jazz in the Background",
+      "uri": "library://playlist/demo-26",
+      "artists": [
+        {
+          "name": "Spotify"
+        }
+      ]
+    },
+    {
+      "media_type": "playlist",
+      "name": "Coffee Table Jazz",
+      "uri": "library://playlist/demo-27",
+      "artists": [
+        {
+          "name": "Spotify"
+        }
+      ]
+    },
+    {
+      "media_type": "playlist",
+      "name": "Peaceful Piano",
+      "uri": "library://playlist/demo-28",
+      "artists": [
+        {
+          "name": "Spotify"
+        }
+      ]
+    },
+    {
+      "media_type": "playlist",
+      "name": "Dinner with Friends",
+      "uri": "library://playlist/demo-29",
+      "artists": [
+        {
+          "name": "Spotify"
+        }
+      ]
+    },
+    {
+      "media_type": "playlist",
+      "name": "Lo-Fi Beats",
+      "uri": "library://playlist/demo-30",
+      "artists": [
+        {
+          "name": "Spotify"
+        }
+      ]
+    },
+    {
+      "media_type": "playlist",
+      "name": "Rock Classics",
+      "uri": "library://playlist/demo-31",
+      "artists": [
+        {
+          "name": "Spotify"
+        }
+      ]
+    },
+    {
+      "media_type": "playlist",
+      "name": "Classical Essentials",
+      "uri": "library://playlist/demo-32",
+      "artists": [
+        {
+          "name": "Spotify"
+        }
+      ]
+    },
+    {
+      "media_type": "playlist",
+      "name": "Weekly Sampler",
+      "uri": "library://playlist/demo-33",
+      "artists": [
+        {
+          "name": "Spotify"
+        }
+      ],
+      "in_library": true
+    },
+    {
+      "media_type": "playlist",
+      "name": "New Releases",
+      "uri": "library://playlist/demo-34",
+      "artists": [
+        {
+          "name": "Spotify"
+        }
+      ],
+      "in_library": true
+    },
+    {
+      "media_type": "playlist",
+      "name": "Daily Mix A",
+      "uri": "library://playlist/demo-35",
+      "artists": [
+        {
+          "name": "Spotify"
+        }
+      ],
+      "in_library": true
+    },
+    {
+      "media_type": "playlist",
+      "name": "Scenic Drive",
+      "uri": "library://playlist/demo-36",
+      "artists": [
+        {
+          "name": "Morgan"
+        }
+      ],
+      "in_library": true
+    },
+    {
+      "media_type": "playlist",
+      "name": "Quiet Morning",
+      "uri": "library://playlist/demo-37",
+      "artists": [
+        {
+          "name": "Morgan"
+        }
+      ],
+      "in_library": true
+    },
+    {
+      "media_type": "playlist",
+      "name": "Workout",
+      "uri": "library://playlist/demo-38",
+      "artists": [
+        {
+          "name": "Morgan"
+        }
+      ],
+      "in_library": true
+    },
+    {
+      "media_type": "radio",
+      "name": "WDEX 93.9 FM",
+      "uri": "library://radio/demo-39",
+      "artists": []
+    },
+    {
+      "media_type": "radio",
+      "name": "WDEX AM 820",
+      "uri": "library://radio/demo-40",
+      "artists": []
+    },
+    {
+      "media_type": "radio",
+      "name": "WCEX 105.9 FM",
+      "uri": "library://radio/demo-41",
+      "artists": []
+    },
+    {
+      "media_type": "radio",
+      "name": "KEXP 90.3 FM",
+      "uri": "library://radio/demo-42",
+      "artists": []
+    },
+    {
+      "media_type": "radio",
+      "name": "BBC Radio 6 Music",
+      "uri": "library://radio/demo-43",
+      "artists": []
+    },
+    {
+      "media_type": "radio",
+      "name": "Jazz24",
+      "uri": "library://radio/demo-44",
+      "artists": []
+    },
+    {
+      "media_type": "podcast",
+      "name": "Morning Brief",
+      "uri": "library://podcast/demo-45",
+      "artists": [
+        {
+          "name": "MORNING NEWS"
+        }
+      ]
+    },
+    {
+      "media_type": "podcast",
+      "name": "The Daily",
+      "uri": "library://podcast/demo-46",
+      "artists": [
+        {
+          "name": "The New York Times"
+        }
+      ]
+    },
+    {
+      "media_type": "podcast",
+      "name": "Radiolab",
+      "uri": "library://podcast/demo-47",
+      "artists": [
+        {
+          "name": "WDEX Studios"
+        }
+      ]
+    }
+  ]
+}

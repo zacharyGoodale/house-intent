@@ -1,0 +1,14 @@
+{
+  "description": "A new Bedroom Speaker speaker in the existing Kitchen, exposed, full Bedroom Speaker feature set (spec §11.2 seed)",
+  "areas": [],
+  "devices": [{"id": "dev_kitchen_speaker", "name": "Kitchen Speaker", "area_id": "kitchen", "manufacturer": "Bedroom Speaker", "model": "Five"}],
+  "entities": [
+    {"entity_id": "media_player.kitchen", "friendly_name": "Kitchen Speaker", "area_id": "kitchen", "device_id": "dev_kitchen_speaker",
+     "platform": "sonos", "device_class": "speaker",
+     "features": ["pause", "seek", "volume_set", "volume_mute", "previous_track", "next_track", "play_media", "stop",
+                  "clear_playlist", "play", "shuffle_set", "browse_media", "repeat_set", "grouping", "media_announce",
+                  "media_enqueue", "search_media"]}
+  ],
+  "states": {"media_player.kitchen": {"state": "idle", "attributes": {"volume_level": 0.3, "is_volume_muted": false}}},
+  "remove": [], "scope": {"include": [], "exclude": []}
+}

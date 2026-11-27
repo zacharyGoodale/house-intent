@@ -1,0 +1,23 @@
+{
+  "description": "A new Studio room with a dimmable lamp and a Bedroom Speaker speaker, and no light group (tests area expansion without a group)",
+  "areas": [{"id": "studio", "name": "Studio", "aliases": []}],
+  "devices": [
+    {"id": "dev_easel_lamp", "name": "Easel Lamp", "area_id": "studio", "manufacturer": "Signify", "model": "Hue color lamp"},
+    {"id": "dev_studio_speaker", "name": "Studio Speaker", "area_id": "studio", "manufacturer": "Bedroom Speaker", "model": "Stereo 100"}
+  ],
+  "entities": [
+    {"entity_id": "light.easel_lamp", "friendly_name": "Easel Lamp", "area_id": "studio", "device_id": "dev_easel_lamp",
+     "capabilities": {"supported_color_modes": ["color_temp", "xy"], "min_color_temp_kelvin": 2000, "max_color_temp_kelvin": 6535}},
+    {"entity_id": "media_player.studio_speaker", "friendly_name": "Studio Speaker", "area_id": "studio", "device_id": "dev_studio_speaker",
+     "platform": "sonos", "device_class": "speaker",
+     "features": ["pause", "seek", "volume_set", "volume_mute", "previous_track", "next_track", "play_media", "stop",
+                  "clear_playlist", "play", "shuffle_set", "browse_media", "repeat_set", "grouping", "media_announce",
+                  "media_enqueue", "search_media"]}
+  ],
+  "states": {
+    "light.easel_lamp": {"state": "off", "attributes": {}},
+    "media_player.studio_speaker": {"state": "playing", "attributes": {"volume_level": 0.2, "is_volume_muted": false,
+                                    "media_title": "Clair de Lune", "media_artist": "Debussy"}}
+  },
+  "remove": [], "scope": {"include": [], "exclude": []}
+}

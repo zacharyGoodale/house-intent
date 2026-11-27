@@ -1,0 +1,67 @@
+# Demo entities for StubHA. Set your own voice scope for a real installation.
+# Voice scope allowlist (decision 8). Entity-specific knowledge lives here and in safety.toml only (decision 9).
+include_exposed = true           # every Assist-exposed entity is in scope (automatic pickup of new ones)
+include = [                      # dashboard entities that are not exposed; glob patterns allowed
+  "script.demo_living_day", "script.demo_living_evening", "script.demo_living_wind_down", "script.demo_movie_mode",
+  "script.demo_bedroom_day", "script.demo_bedroom_evening", "script.demo_bedroom_wind_down", "script.demo_bedroom_bed",
+  "script.demo_alarm_lights", "script.common_relax", "script.common_lights_off", "script.play_morning_brief",
+  "automation.demo_morning_scene", "weather.forecast_home", "sun.sun",
+  "sensor.demo_bedroom_radio_next_alarm", "lock.entry_lock",
+  "climate.bedroom_demo_thermostat", "climate.living_room_demo_thermostat",
+  "select.example_bedroom_ptac_fan_speed", "select.example_living_room_ptac_fan_speed",
+]
+exclude = [                      # never candidates
+  "switch.*_ptac_power", "number.*_ptac_target_temperature", "select.*_ptac_operating_mode",
+  "media_player.demo_soundbar_duplicate", "media_player.stereo_duplicate", "media_player.bedroom_speaker_duplicate",   # Alexa duplicates (OQ 5)
+  "scene.demo_bedroom_imported_scene*",                                                   # OQ 22
+  "calendar.*",   # calendars are read only through people.toml; their states carry event text (untrusted)
+]
+
+[music]                           # free-form "play ..." through Music Assistant (docs/usage.md)
+integration = "music_assistant"   # HA integration that owns search / get_library / play_media
+players = {}                      # optional: speaker entity -> MA player entity, when registry pairing can't tell
+
+[aliases]                         # entity or area -> extra names (HA has none); keys are globs or area ids
+"media_player.demo_tv" = ["TV", "Apple TV"]
+"cover.bedroom_shade*" = ["blinds", "shades"]
+"switch.demo_coffee_maker" = ["coffee machine", "espresso"]
+"light.pendant_*" = ["Pendant", "kitchen pendant"]
+"light.mirror_strip" = ["vanity", "mirror light"]
+"media_player.demo_stereo" = ["Stereo", "Stereo"]
+"media_player.demo_bedroom_speaker" = ["Bedroom Speaker", "bedroom speaker"]
+"automation.demo_morning_scene" = ["sunrise alarm", "sunrise routine", "wake-up light"]
+"script.demo_movie_mode" = ["movie mode", "film mode"]
+"script.demo_bedroom_bed" = ["bedtime", "bed mode"]
+"script.play_morning_brief" = ["Morning Brief", "news podcast", "MORNING NEWS"]
+"script.common_lights_off" = ["all off", "everything off downstairs"]
+"script.demo_alarm_lights" = ["morning lights"]
+"climate.bedroom_demo_thermostat" = ["A/C", "AC", "air conditioner", "air conditioning", "bedroom AC", "PTAC", "heater", "thermostat", "temperature", "room temperature", "AC temperature", "AC mode"]
+"climate.living_room_demo_thermostat" = ["living room AC", "living room thermostat", "living room heater", "living room temperature", "living room PTAC"]
+"select.example_bedroom_ptac_fan_speed" = ["AC fan", "air conditioner fan", "fan speed", "PTAC fan"]
+"select.example_living_room_ptac_fan_speed" = ["living room AC fan", "living room fan speed"]
+"area:living_room" = ["lounge", "downstairs"]
+
+[defaults]
+list = "todo.shopping_list"                               # OQ 26
+transport_player = { living_room = "media_player.demo_stereo", bedroom = "media_player.demo_bedroom_speaker" }   # OQ 24
+high_stakes = ["switch.demo_coffee_maker"]         # OQ 28
+
+[[presets]]                       # dashboard composites with no HA script (Pendant modes)
+id = "kitchen_day"
+name = "Kitchen daytime"
+aliases = ["Pendant day", "kitchen day mode"]
+[[presets.calls]]
+domain = "light"
+service = "turn_on"
+entity_ids = ["light.pendant_upper", "light.pendant_lower"]
+data = { color_temp_kelvin = 3000, brightness_pct = 85, transition = 0.5 }
+
+[[presets]]
+id = "kitchen_evening"
+name = "Kitchen evening"
+aliases = ["Pendant evening"]
+[[presets.calls]]
+domain = "light"
+service = "turn_on"
+entity_ids = ["light.pendant_upper", "light.pendant_lower"]
+data = { color_temp_kelvin = 2237, brightness_pct = 56, transition = 0.5 }

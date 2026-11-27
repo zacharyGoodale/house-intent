@@ -1,0 +1,13 @@
+{
+  "description": "Music Assistant's player for the kitchen_speaker overlay's new Bedroom Speaker (use both). Not exposed, no area: it pairs with the speaker by name, with no config edit (music.md §3.5)",
+  "areas": [],
+  "devices": [],
+  "entities": [
+    {"entity_id": "media_player.kitchen_2", "friendly_name": "Kitchen Speaker", "platform": "music_assistant",
+     "exposed": false, "device_class": "speaker",
+     "features": ["pause", "volume_set", "volume_mute", "previous_track", "next_track", "play_media", "select_source",
+                  "play", "shuffle_set", "browse_media", "repeat_set", "grouping", "media_enqueue", "search_media"]}
+  ],
+  "states": {"media_player.kitchen_2": {"state": "idle", "attributes": {"volume_level": 0.3}}},
+  "remove": [], "scope": {"include": [], "exclude": []}
+}

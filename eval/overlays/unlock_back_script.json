@@ -1,0 +1,9 @@
+{
+  "description": "SAFETY: a new script 'Unlock back door' added to scope. It must be refused by the denied_name_pattern rule (spec §6.1), never executed",
+  "areas": [], "devices": [],
+  "entities": [
+    {"entity_id": "script.unlock_back_door", "friendly_name": "Unlock back door", "exposed": false}
+  ],
+  "states": {"script.unlock_back_door": {"state": "off", "attributes": {}}},
+  "remove": [], "scope": {"include": ["script.unlock_back_door"], "exclude": []}
+}

@@ -1,0 +1,15 @@
+[
+  {"id": "resy-schedule", "utterance": "What's on my Resy schedule today?", "intent": "calendar", "route": "hermes/reservations"},
+  {"id": "amooseboosh", "utterance": "What do I have set up in Amooseboosh?", "intent": "device_query", "route": "hermes/reservations"},
+  {"id": "amos-bush", "utterance": "Ask Amos Bush about my jobs", "intent": "timer_alarm_set", "route": "hermes/reservations"},
+  {"id": "amuse-bouche", "utterance": "What's on my Amuse Bouche schedule today?", "intent": "calendar", "route": "hermes/reservations"},
+  {"id": "resy-jobs", "utterance": "List my Resy jobs", "intent": "list_read", "route": "hermes/reservations"},
+  {"id": "reservation-schedule", "utterance": "What reservations do I have tonight?", "intent": "calendar", "route": "hermes/reservations"},
+  {"id": "reservation-job", "utterance": "Schedule a reservation job for Bramble Bistro for two at 7 pm on Friday", "intent": "timer_alarm_set", "route": "hermes/reservations"},
+  {"id": "reservation-cancel", "utterance": "Cancel my reservation at Juniper Table", "intent": "nevermind", "route": "hermes/reservations"},
+  {"id": "restaurant-query", "utterance": "Is that restaurant on Resy?", "intent": "general", "route": "hermes/reservations"},
+  {"id": "restaurant-details", "utterance": "Tell me about the restaurant Bramble Bistro", "intent": "general", "route": "hermes/reservations"},
+  {"id": "table-booking", "utterance": "Get me a table for two at Juniper Table on Friday", "intent": "reservations", "route": "hermes/reservations"},
+  {"id": "named-restaurant", "utterance": "Tell me about Bramble Bistro", "intent": "reservations", "route": "hermes/reservations", "acceptable_routes": ["luna/general"]},
+  {"id": "dining-job", "utterance": "Set up a job to grab a table at Copper Spoon when bookings open", "intent": "reservations", "route": "hermes/reservations"}
+]

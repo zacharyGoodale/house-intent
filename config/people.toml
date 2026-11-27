@@ -1,0 +1,29 @@
+# Fictional speaker profiles for StubHA. Create your own private profiles for a real installation.
+# Household members. The id arrives with each request when the speaker is known
+# (per-person wake word -> per-person HA pipeline), else the request is anonymous.
+#
+# Speaker identity (docs/SPEC.md §17, docs/usage.md): each Voice PE runs two wake words, each
+# with its own Assist pipeline, and each pipeline uses its own Jev conversation agent. `agents` lists the HA
+# conversation agent ids that mean this person; `wake_word` records which wake word that pipeline listens for.
+# The id "household" is reserved (it owns shared memory facts).
+#
+# calendars: HA calendar entities (globs allowed) that are this person's. They are read only through here;
+#   scope.toml keeps calendar.* out of the voice scope, so event text never reaches Jev.
+# calendar_share: who may hear them. "household" = anyone at home hears titles (default, OQ 117);
+#   "titles_private" = others hear busy times only; "private" = only this person.
+
+[people.riley]
+name = "Riley"
+temperature_unit = "F"
+wake_word = "Hey Assistant"
+agents = ["conversation.jev_riley"]
+calendars = ["calendar.riley"]
+calendar_share = "household"
+
+[people.morgan]
+name = "Morgan"
+temperature_unit = "C"
+wake_word = "Okay Computer"
+agents = ["conversation.jev_morgan"]
+calendars = ["calendar.morgan"]
+calendar_share = "household"

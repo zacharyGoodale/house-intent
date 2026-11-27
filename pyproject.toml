@@ -1,0 +1,40 @@
+[project]
+name = "ha-jev"
+version = "0.1.0"
+description = "Voice command core for Home Assistant, routed by Jev (TypeSafe System One)"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "typesafe-sdk==0.7.1",
+    "openai>=2,<3",
+    "httpx>=0.28,<1",
+    "websockets>=13",
+    "aiohttp>=3.12,<4",
+]
+
+[project.scripts]
+ha-jev = "ha_jev.cli:main"
+ha-jev-server = "ha_jev.server:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=0.24",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ha_jev"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+markers = [
+    "live: calls the real Jev API (needs TYPESAFE_API_KEY)",
+    "live_llm: calls the real OpenAI Luna API (needs OPENAI_API_KEY)",
+]
+addopts = "-m 'not live and not live_llm'"

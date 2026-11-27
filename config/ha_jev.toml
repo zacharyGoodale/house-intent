@@ -1,0 +1,81 @@
+[jev]
+model = "jev-latest"          # OQ 34: pin once thresholds are tuned
+timeout_s = 2.0               # overall deadline including the retry
+attempt_timeout_s = 1.2       # per attempt
+max_retries = 1
+keepalive_s = 0               # 0 = off
+
+[luna]
+model = "gpt-6-luna"
+effort = "none"
+max_output_tokens = 120
+timeout_s = 5.0
+max_retries = 1
+# Sent to OpenAI with every Luna question (never to Jev). Keep it to what you're comfortable sharing.
+persona = "Be warm, friendly and a little casual, like a helpful housemate."
+household = ""
+
+[hermes]
+relaxed_streaming = false
+base_url = ""  # Set HERMES_BASE_URL in your private environment.
+api_key_file = ".env.hermes-key"  # gitignored; HERMES_API_KEY can override
+model = "hermes-agent"
+timeout_s = 300.0            # active agent budget; independent of conversation silence
+conversation_idle_s = 30.0    # return to Jev after this much silence
+# Actual model pricing is not known yet; Hermes costs are unpriced until configured.
+input_per_m = 0.0
+cached_per_m = 0.0
+output_per_m = 0.0
+
+[memory]
+# The fact store (memory.json) lives outside the repo. "" = $HA_JEV_DATA_DIR, else ~/.local/share/ha-jev.
+enabled = true
+dir = ""
+max_fact_chars = 200
+max_facts_per_owner = 100
+undo_window_s = 600
+read_max = 8
+
+[policy]
+intent_floor = 0.50
+general_route = 0.60
+needs_llm_route = 0.70
+security_refuse = 0.50
+compound = 0.60
+compound_nosplit = 0.80
+act = 0.70
+high_stakes_act = 0.85
+clarify_floor = 0.45
+none_confident = 0.60
+noul_yes = 0.50
+number_setting = 0.60
+clarify_min_p = 0.15
+clarify_max_options = 3
+step_pct = 20
+volume_step_pct = 10
+kelvin_step = 500
+pending_ttl_s = 60
+recent_ttl_s = 300
+prune_threshold = 60
+prune_keep = 40
+max_request_tokens = 12000
+quantifier_home = 0.9         # "all"/"every"/"any"/"everywhere" with no room named: whole-home evidence
+anaphor_room_weight = 0.2     # "it"/"them" with a recent target and no room: room/house/bare readings x this
+unknown_room = 0.50           # the unknown_room noul at or above this, with no known room named: R_NO_DEVICE
+strict_group_areas = true     # review S3: a group is used for a room only if all its members are in that room
+
+[prices]
+jev_input_per_m = 0.042
+luna_input_per_m = 0.10
+luna_cached_per_m = 0.01
+luna_output_per_m = 0.50
+
+[log]
+dir = "logs"
+enabled = false
+
+[ha.real]
+entity_id_map = {}
+
+[replies]
+llm_phrasing = false

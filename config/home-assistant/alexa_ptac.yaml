@@ -1,0 +1,14 @@
+# Private Alexa access: one thermostat per room; legacy raw controls stay internal.
+smart_home:
+  locale: en-US
+  filter:
+    include_entities:
+      - climate.bedroom_demo_thermostat
+      - climate.living_room_demo_thermostat
+  entity_config:
+    climate.bedroom_demo_thermostat:
+      name: Bedroom thermostat
+      description: Bedroom PTAC heating, cooling, and target temperature
+    climate.living_room_demo_thermostat:
+      name: Living Room thermostat
+      description: Living room PTAC heating, cooling, and target temperature

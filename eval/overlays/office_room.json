@@ -1,0 +1,17 @@
+{
+  "description": "New Office room with a desk lamp, a Hue group and a scene, plus an unexposed script added to scope (spec §11.2 seed)",
+  "areas":    [{"id": "office", "name": "Office", "aliases": []}],
+  "devices":  [{"id": "dev_office_group", "name": "Office", "area_id": "office", "manufacturer": "Signify", "model": "Room"}],
+  "entities": [
+    {"entity_id": "light.desk_lamp", "friendly_name": "Desk Lamp", "area_id": "office",
+     "capabilities": {"supported_color_modes": ["color_temp", "xy"], "min_color_temp_kelvin": 2000, "max_color_temp_kelvin": 6535}},
+    {"entity_id": "light.office", "friendly_name": "Office", "area_id": "office", "device_id": "dev_office_group",
+     "capabilities": {"supported_color_modes": ["color_temp", "xy"], "min_color_temp_kelvin": 2000, "max_color_temp_kelvin": 6535}},
+    {"entity_id": "scene.office_focus", "friendly_name": "Office Focus", "area_id": "office"},
+    {"entity_id": "script.party_mode", "friendly_name": "Party mode", "exposed": false}
+  ],
+  "states":   {"light.office": {"state": "off", "attributes": {"entity_id": ["light.desk_lamp"]}},
+               "light.desk_lamp": {"state": "off", "attributes": {}}},
+  "remove":   [],
+  "scope":    {"include": ["script.party_mode"], "exclude": []}
+}

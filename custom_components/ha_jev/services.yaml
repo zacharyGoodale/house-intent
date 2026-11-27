@@ -1,0 +1,62 @@
+manage_schedule:
+  name: Manage timer or alarm
+  description: Create, list, update or delete persistent one-shot alarms and timers owned by the authenticated HA user. Request response data when supported; plain service calls also work, then read the sensor schedules attributes to verify changes. Existing set/replace/cancel/query operations remain supported. Updates preserve IDs and playback targets.
+  fields:
+    op:
+      required: true
+      selector:
+        select:
+          options: [create, list, update, delete, set, replace, cancel, query]
+    kind:
+      required: true
+      selector:
+        select:
+          options: [timer, alarm]
+    id:
+      description: Stable schedule ID from a list response or sensor schedules attribute. Selects one owned schedule.
+      selector:
+        text:
+    new_label:
+      description: New name when updating a schedule.
+      selector:
+        text:
+    at:
+      description: Future ISO 8601 timestamp including timezone. Use instead of seconds or hour.
+      selector:
+        text:
+    label:
+      description: Exact name to select; use new_label to rename. Omit to list all owned schedules.
+      selector:
+        text:
+    seconds:
+      selector:
+        number:
+          min: 0.001
+          max: 604800
+          mode: box
+    hour:
+      description: Local clock hour to create/update an alarm, or select alarms when cancelling. Without tomorrow, cancellation matches any date and requires a unique match unless all is true.
+      selector:
+        number:
+          min: 0
+          max: 23
+          mode: box
+    minute:
+      selector:
+        number:
+          min: 0
+          max: 59
+          mode: box
+    tomorrow:
+      selector:
+        boolean:
+    all:
+      selector:
+        boolean:
+    area_id:
+      selector:
+        text:
+    device_id:
+      description: Requesting Voice device; resolved to its own Assist satellite.
+      selector:
+        device:

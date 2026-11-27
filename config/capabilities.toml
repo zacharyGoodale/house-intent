@@ -1,0 +1,68 @@
+# Unified HA climate entities; raw PTAC power/temperature/mode controls are out of voice scope.
+[[domains]]
+domain = "climate"
+kind = "thermostat"
+device_type = "thermostat"
+device_type_description = "indoor room temperature, thermostat, AC, air conditioning, heater, heating/cooling, too hot/cold, warmer/cooler (not light colour or outdoor weather)"
+action_question = "temperature_action"
+action_instructions = "What should happen to the thermostat in {u}? Bare warmer/cooler or too hot/cold means room temperature; explicit lights or warm/cool white means light colour. Questions about current temperature or settings are device_query, not commands."
+builder = "climate"
+query_attributes = ["on_off", "temperature", "target_temperature", "hvac_mode"]
+target_option = true
+mention = true
+unspecified = "only_or_room"
+implicit_target = true
+[domains.actions.turn_on]
+service = "turn_on"
+reply = "R_ON"
+description = "turn on AC or heating, resuming the last mode"
+[domains.actions.turn_off]
+service = "set_hvac_mode"
+data = {hvac_mode = "off"}
+reply = "R_OFF"
+description = "turn off the AC, heater, or thermostat"
+[domains.actions.set_temperature]
+service = "set_temperature"
+description = "set the thermostat or AC to a specific temperature in degrees"
+[domains.actions.warmer]
+service = "set_temperature"
+description = "raise the target temperature: warmer, turn the temperature up, too cold; optional number of degrees"
+reply = "R_WARMER"
+[domains.actions.cooler]
+service = "set_temperature"
+description = "lower the target temperature: cooler, turn the temperature down, too hot; optional number of degrees"
+reply = "R_COOLER"
+[domains.actions.heat]
+service = "set_hvac_mode"
+data = {hvac_mode = "heat"}
+description = "switch to heating mode"
+[domains.actions.cool]
+service = "set_hvac_mode"
+data = {hvac_mode = "cool"}
+description = "switch to cooling mode"
+[domains.actions.fan_only]
+service = "set_hvac_mode"
+data = {hvac_mode = "fan_only"}
+description = "fan only without heating or cooling"
+
+[[domains]]
+domain = "select"
+kind = "air conditioner fan speed"
+device_type = "hvac_setting"
+device_type_description = "AC fan speed (auto, low, high); operating mode belongs to the thermostat"
+action_question = "hvac_setting_action"
+action_instructions = "Which AC fan speed is requested in {u}? Heat, cool, fan-only, and off belong to the thermostat."
+target_option = true
+mention = true
+[domains.actions.auto]
+service = "select_option"
+description = "automatic fan speed"
+data = {option = "Auto"}
+[domains.actions.low]
+service = "select_option"
+description = "low fan speed"
+data = {option = "Low"}
+[domains.actions.high]
+service = "select_option"
+description = "high fan speed"
+data = {option = "High"}

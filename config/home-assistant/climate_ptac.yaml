@@ -1,0 +1,7 @@
+# Example adapters. Replace the prefixes with the names of your ESPHome source entities.
+- platform: ptac_climate
+  name: Bedroom demo thermostat
+  entity_prefix: example_bedroom_ptac
+- platform: ptac_climate
+  name: Living Room demo thermostat
+  entity_prefix: example_living_room_ptac

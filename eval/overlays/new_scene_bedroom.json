@@ -1,0 +1,8 @@
+{
+  "description": "A new exposed Hue scene in the existing Bedroom room (spec §11.2 seed)",
+  "areas": [], "devices": [],
+  "entities": [
+    {"entity_id": "scene.bedroom_movie_night", "friendly_name": "Bedroom Movie Night", "area_id": "bedroom"}
+  ],
+  "states": {}, "remove": [], "scope": {"include": [], "exclude": []}
+}

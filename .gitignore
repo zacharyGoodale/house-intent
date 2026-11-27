@@ -1,0 +1,15 @@
+.env
+.env.*
+*.pem
+ha-raw/
+__pycache__/
+.venv/
+.pytest_cache/
+*.pyc
+eval/runs/
+logs/
+.claude/worktrees/
+.deployed-revision
+config/private/
+memory.json
+*.key
