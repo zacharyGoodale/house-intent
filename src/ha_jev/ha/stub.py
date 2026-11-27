@@ -17,8 +17,8 @@ from pathlib import Path
 from typing import Any
 
 from ha_jev.capabilities import features_from_bits
-from ha_jev.ha.interface import (Area, Device, EntityEntry, EntityState, HAError, Registry, effective_area,
-                                 floor_names_by_id)
+from ha_jev.ha.interface import (Area, Device, EntityEntry, EntityState, HAError, Registry, ServiceNotFound,
+                                 effective_area, floor_names_by_id)
 from ha_jev.models import ReadCall, ServiceCall
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -261,7 +261,7 @@ class StubHA:
         if (domain, service) not in _READ_SERVICES:
             self.attempted_calls.append(call)  # recorded before validation, so the eval sees every attempt (S-5)
         if service not in _SERVICES.get(domain, set()):
-            raise HAError(f"unknown service {domain}.{service}")
+            raise ServiceNotFound(f"unknown service {domain}.{service}")
         target_domain = _TARGET_DOMAIN.get((domain, service), domain)
         for eid in entity_ids:
             if eid not in self._registry.entities or not eid.startswith(target_domain + "."):

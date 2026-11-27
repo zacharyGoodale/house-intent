@@ -8,7 +8,7 @@ names, and the device_type and action Choices are generated from the capability 
 from __future__ import annotations
 
 import json
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
@@ -17,7 +17,7 @@ from ha_jev import calendars, music
 from ha_jev import capabilities as caps
 from ha_jev import memory
 from ha_jev.catalog import Catalog
-from ha_jev.config import Person, PolicySettings
+from ha_jev.config import Handoff, Person, PolicySettings
 from ha_jev.extract import Extraction
 from ha_jev.jev import Answer, ChoiceAnswer, NoulAnswer
 from ha_jev.resolve import rank_options
@@ -36,6 +36,7 @@ class RequestContext:
     policy: PolicySettings = field(default_factory=PolicySettings)
     memory_options: Mapping[str, str] | None = None  # memory.forget_options: asked only for "forget <something>"
     people: Mapping[str, Person] = field(default_factory=dict)  # config/people.toml, for the calendar questions
+    handoffs: Sequence[Handoff] = ()  # config [[handoffs]]: extra intents for the Hermes agent
 
 
 @dataclass
@@ -46,7 +47,7 @@ class BuiltRequest:
 
 
 # ---- fixed text (§5.4) ------------------------------------------------------------------------
-def _intent(u: str, pending: bool, calendar: bool = False) -> dict:
+def _intent(u: str, pending: bool, calendar: bool = False, handoffs: Sequence[Handoff] = ()) -> dict:
     criteria: dict[str, Any] = {
         "device_control": "Change a device in this home: lights, plugs or switches, air conditioning (AC), thermostats, room temperature, blinds, speakers or TV (play, pause, volume, app), do-not-disturb, automations, locks. Includes implied requests such as 'it's too dark in here' or 'louder', and any request that names a device from `home.devices`, even when that name contains a word like 'play' or 'mode'.",
         "device_query": "Ask about the current state of something in this home without changing it: whether a light or routine is on, whether a door is locked or open, blind position, what is playing, motion, power use, next alarm or timer, sunrise or sunset time. Includes indoor or room temperature, thermostat target/setpoint, heating/cooling mode, and whether the AC is on. Bare temperature inquiries mean indoor temperature; outdoor temperature belongs to weather.",
@@ -56,12 +57,12 @@ def _intent(u: str, pending: bool, calendar: bool = False) -> dict:
         "weather": "Outdoor weather, outdoor temperature, humidity or forecast at home: now, today, tonight, tomorrow, the next few hours, this week, umbrella. Not indoor room temperature, thermostat settings, heating/cooling, or comfort commands; those are device_query or device_control.",
         "timer_alarm_set": {"what": "Create, list, query, update, reschedule, rename or delete a timer, alarm or reminder.",
                             "not_for": "restaurant bookings or reservation jobs; turning a routine or device from `home.devices` on or off, even if its name contains 'alarm' or 'timer'"},
-        "reservations": {"what": "Anything about restaurants, dining reservations, table availability, booking or cancelling a table, or scheduling and managing reservation jobs. Includes questions about a specific restaurant by name, Resy, Amooseboosh MCP, and the spoken name Amos Bush.",
-                         "not_for": "ordinary personal calendar appointments, meetings, or a generic question like 'what is on my schedule today' without restaurant or reservation context"},
         "general": "Anything else: facts, maths, advice, jokes, chit-chat, weather somewhere else, questions not about this home's devices. Never a name from `home.scenes` or `home.devices`.",
         "nevermind": "Cancel or dismiss: never mind, cancel that, forget it.",
     }
     criteria.update(memory.INTENT_CRITERIA)  # --- memory intents (memory.py, SPEC §17)
+    for h in handoffs:  # config [[handoffs]]: intents the Hermes agent owns
+        criteria[h.id] = {"what": h.what, "not_for": h.not_for} if h.not_for else h.what
     if calendar:  # calendars.py: only when someone has a calendar in config/people.toml
         criteria[calendars.INTENT] = calendars.intent_option()
     if pending:
@@ -135,15 +136,23 @@ def _action_choice(u: str, row: caps.DomainCaps) -> dict:
     return _choice(instructions, criteria)
 
 
-def _query_attribute(u: str) -> dict:
-    opts = ["on_off", "brightness", "color", "position", "playing", "volume", "locked", "open_closed", "motion",
-            "power", "next_alarm", "next_timer", "sunrise", "sunset", "items", "other"]
-    criteria = {o: None for o in opts}
-    criteria.update({
-        "temperature": "actual current indoor or room temperature: how hot/cold is it in here, what's the temperature; not the thermostat target and not outside weather",
-        "target_temperature": "thermostat target or setpoint: what is the AC or thermostat set to, what temperature did I set",
-        "hvac_mode": "thermostat operating mode: heating, cooling, fan-only or off; is the AC heating or cooling",
-    })
+# What a status question can ask about, in Choice order; each is offered only when a domain this home has can
+# answer it (its capability row's `query_attributes`). "other" is always offered.
+QUERY_ATTRIBUTES: dict[str, str | None] = {
+    "on_off": None, "brightness": None, "color": None, "position": None,
+    "playing": "what is playing or on: the show, song, app or channel on a TV or speaker",
+    "volume": None, "locked": None, "open_closed": None, "motion": None, "power": None, "next_alarm": None,
+    "next_timer": None, "sunrise": None, "sunset": None, "items": None,
+    "temperature": "actual current indoor or room temperature: how hot/cold is it in here, what's the temperature; not the thermostat target and not outside weather",
+    "target_temperature": "thermostat target or setpoint: what is the AC or thermostat set to, what temperature did I set",
+    "hvac_mode": "thermostat operating mode: heating, cooling, fan-only or off; is the AC heating or cooling",
+}
+
+
+def _query_attribute(u: str, table: caps.CapabilityTable) -> dict:
+    answerable = {a for row in table.rows.values() for a in row.query_attributes}
+    criteria = {o: d for o, d in QUERY_ATTRIBUTES.items() if o in answerable}
+    criteria["other"] = None
     return _choice(f"What does {u} ask about?", criteria)
 
 
@@ -211,8 +220,8 @@ def home_directory(cat: Catalog) -> dict[str, list[str]]:
             e = cat.entities.get(i)
             extra = list(e.aliases) if e is not None else list(cat.presets[i].aliases) if i in cat.presets else []
             for n in (cat.name(i), *extra):
-                if i in cat.hue_scenes:
-                    n = f"Hue scene {n}"
+                if i in cat.qualified_scenes:
+                    n = f"{cat.qualified_scenes[i].capitalize()} scene {n}"
                 if n and n not in out:
                     out.append(n)
         return out
@@ -261,7 +270,7 @@ def build_request(ctx: RequestContext, restrict: Mapping[str, list[str]] | None 
     def assemble(target_opts: list[str], scene_opts: list[str], mention_opts: list[str]) -> dict[str, dict]:
         q: dict[str, dict] = {}
         pending = ctx.pending is not None
-        q["intent"] = _intent(U, pending, bool(calendars.with_calendars(ctx.people)))
+        q["intent"] = _intent(U, pending, bool(calendars.with_calendars(ctx.people)), ctx.handoffs)
         q["needs_llm"] = _noul(f"Would a good reply to {U} require composing an answer from general knowledge or conversation, rather than operating or reading a device, a list, or the home weather forecast?")
         q["security"] = _noul(f"Does {U} ask to lock, unlock, open, arm or disarm anything that secures the home (door lock, deadbolt, alarm system, garage door, gate), or to let someone in, directly or through a scene, script or routine? Asking whether something is locked is not asking to change it. Lights, scenes or routines that only have a word like 'alarm' in their name, such as 'alarm lights', are not security devices.")
         q["unknown_room"] = _noul({
@@ -299,7 +308,7 @@ def build_request(ctx: RequestContext, restrict: Mapping[str, list[str]] | None 
         per_utterance(U, "", list(range(len(x.numbers))), x.text)
         for eid in mention_opts:
             q[f"mentioned__{eid}"] = _noul(f"Does {U} name {mention_label(cat, eid)} as one of the devices to act on?")
-        q["query_attribute"] = _query_attribute(U)
+        q["query_attribute"] = _query_attribute(U, cat.caps)
         if cat.sources:
             q["source"] = _choice(f"Which app or source does {U} ask to open on the TV?",
                                   {**{s: None for s in cat.sources}, "none": None})
@@ -322,7 +331,7 @@ def build_request(ctx: RequestContext, restrict: Mapping[str, list[str]] | None 
         for i, _part in enumerate(x.parts):
             u = f"`parts[{i}]`"
             prefix = f"p{i}__"
-            q[prefix + "intent"] = _intent(u, pending)
+            q[prefix + "intent"] = _intent(u, pending, handoffs=ctx.handoffs)
             nums = x.part_numbers[i] if i < len(x.part_numbers) else []
             per_utterance(u, prefix, nums, _part)
         return q

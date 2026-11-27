@@ -72,12 +72,16 @@ class Catalog:
     music_twins: dict[str, str] = field(default_factory=dict)
     music_integration: str | None = None
     music_limit: int = 5
-    hue_scenes: frozenset[str] = frozenset()
+    # Scenes of the integrations in scope.toml `qualified_scene_platforms` -> that integration: they are offered
+    # only when the utterance names it ("Hue scene relax"), and the rest only when it names none.
+    qualified_scenes: Mapping[str, str] = field(default_factory=dict)
 
     def scene_options_for(self, utterance: str) -> list[str]:
-        """Hue presets require an explicit qualifier; dashboard routines are the default."""
-        hue = bool(re.search(r"\bhue\s+scenes?\b", utterance, re.IGNORECASE))
-        return [key for key in self.scene_options if (key in self.hue_scenes) == hue]
+        said = {p for p in set(self.qualified_scenes.values())
+                if re.search(rf"\b{re.escape(p)}\s+scenes?\b", utterance, re.IGNORECASE)}
+        if said:
+            return [key for key in self.scene_options if self.qualified_scenes.get(key) in said]
+        return [key for key in self.scene_options if key not in self.qualified_scenes]
 
     def music_play_services(self) -> frozenset[tuple[str, str]]:
         """The proxy service the executor may send to a twin player (safety.guard)."""
@@ -239,15 +243,16 @@ class Catalog:
         top = max((prio(ce) for ce in scene_like_all), default=0)
         wrappers = {(ce.area_id, normalize_name(ce.name)) for ce in scene_like_all if prio(ce) == top}
         wrappers_no_area = {n for a, n in wrappers if a is None}
-        hue_scenes = frozenset(eid for eid in entities if table.caps_for(entities[eid].domain).scene_like
-                               and registry.entities[eid].platform == "hue")
+        qualified = {eid: registry.entities[eid].platform for eid in entities
+                     if table.caps_for(entities[eid].domain).scene_like
+                     and registry.entities[eid].platform in scope.qualified_scene_platforms}
         seen: dict[tuple[str | None, str, bool], str] = {}
         scene_like: list[str] = []
         for ce in scene_like_all:
             key = (ce.area_id, normalize_name(ce.name))
-            if ce.entity_id not in hue_scenes and prio(ce) < top and (key in wrappers or key[1] in wrappers_no_area):
+            if ce.entity_id not in qualified and prio(ce) < top and (key in wrappers or key[1] in wrappers_no_area):
                 continue
-            namespaced_key = (*key, ce.entity_id in hue_scenes)
+            namespaced_key = (*key, qualified.get(ce.entity_id))
             if prio(ce) < top and namespaced_key in seen:
                 continue
             seen.setdefault(namespaced_key, ce.entity_id)
@@ -292,7 +297,7 @@ class Catalog:
             registry_areas={eid: (e.area_id if e.area_id in areas else None) for eid, e in registry.entities.items()},
             music_twins={s: t for s, t in twins.items() if s in set(music)},
             music_integration=scope.music.integration, music_limit=scope.music.search_limit,
-            hue_scenes=hue_scenes,
+            qualified_scenes=qualified,
         )
 
 

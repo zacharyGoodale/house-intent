@@ -46,6 +46,8 @@ high_stakes = ["switch.space_heater"]   # needs a higher confidence before switc
 
 Keep `calendar.*` excluded. Calendars are read through `people.toml`, and calendar states carry event text.
 
+If your dashboard scripts wrap an integration's scenes, say `qualified_scene_platforms = ["hue"]` at the top of the file. Those scenes are then offered only when the integration is named ("Hue scene relax"), so they don't crowd out the scripts. By default, every scene is offered by its own name.
+
 `[[presets]]` defines multi-call composites that have no HA script. See `demo/config/scope.toml`. `[music]` turns on free-form "play …" through Music Assistant (`integration = "music_assistant"`).
 
 ## safety.toml
@@ -73,6 +75,18 @@ calendar_share = "household"             # or "titles_private" / "private"
 ```
 
 Without people the router still works. Requests are anonymous, and memory is household-only.
+
+## ha_jev.toml: handoffs
+
+A handoff adds an intent that the Hermes agent answers, for agents with their own tools, such as a restaurant-booking agent. Jev sees `what` and `not_for` as a new intent option. Any of the `keywords` (regex word patterns) in an utterance routes it straight to the agent. Homes without handoffs never see these options.
+
+```toml
+[[handoffs]]
+id = "reservations"
+what = "Anything about restaurants, dining reservations or booking a table."
+not_for = "ordinary calendar appointments"
+keywords = ["reservations?", "restaurants?"]
+```
 
 ## capabilities.toml
 

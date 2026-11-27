@@ -7,11 +7,11 @@ from tests.unit.test_core import make_core
 
 @pytest.mark.parametrize('text', ["what's the temperature?", "what's the temp outside?", 'how hot is it?'])
 @pytest.mark.parametrize('classified_when', ['now', 'none', 'today'])
-async def test_temperature_defaults_to_daily_high_low_and_rain(text, classified_when):
+async def test_bare_temperature_gives_the_reading_now_then_daily_high_low_and_rain(text, classified_when):
     core, ha = await make_core(FakeJev({'intent': 'weather', 'weather_when': classified_when}))
     result = await core.handle(text)
     assert result.debug.route == 'weather/today'
-    assert result.reply == 'Today: partly cloudy, high 70, low 55, 10% chance of rain.'
+    assert result.reply == "It's 66°F now. Today: partly cloudy, high 70, low 55, 10% chance of rain."
     assert result.debug.reads[0].data['type'] == 'daily'
 
 
@@ -49,3 +49,9 @@ async def test_daily_rain_without_percentage_uses_available_forecast(condition, 
                  'condition': condition, 'precipitation': amount}]
     reply = render_weather('W_DAY', {'when': 'today'}, {}, condition, forecast, ha.now)
     assert phrase in reply and '0%' not in reply
+
+
+async def test_an_explicit_today_gets_the_forecast_without_the_reading_now():
+    core, _ = await make_core(FakeJev({'intent': 'weather', 'weather_when': 'today'}))
+    result = await core.handle("what's the temperature today?")
+    assert result.reply == 'Today: partly cloudy, high 70, low 55, 10% chance of rain.'

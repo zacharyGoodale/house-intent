@@ -11,6 +11,10 @@ class HAError(Exception):
     pass
 
 
+class ServiceNotFound(HAError):
+    """Home Assistant has no such service: an integration this feature needs is not installed."""
+
+
 @dataclass(frozen=True)
 class Area:
     id: str

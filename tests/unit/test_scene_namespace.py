@@ -1,12 +1,28 @@
-"""Dashboard routines are the default; Hue scenes require their spoken namespace."""
+"""With `qualified_scene_platforms = ["hue"]`, dashboard routines are the default and Hue scenes require their
+spoken namespace. (Off by default: see test_scenes_are_offered_by_name_without_the_option.)"""
+
+import shutil
 
 import pytest
+
+from ha_jev.config import DEMO_CONFIG_DIR
 
 from ha_jev.models import Outcome
 from tests.fakes import FakeJev
 from tests.unit.test_core import make_core
 from tests.unit.test_questions import ctx_for
 from ha_jev.questions import build_request, build_retry_request
+
+
+@pytest.fixture(autouse=True)
+def hue_qualified(tmp_path, monkeypatch, request):
+    if request.node.name == "test_scenes_are_offered_by_name_without_the_option":
+        return
+    cfg = tmp_path / "config"
+    shutil.copytree(DEMO_CONFIG_DIR, cfg)
+    scope = cfg / "scope.toml"
+    scope.write_text('qualified_scene_platforms = ["hue"]\n' + scope.read_text())
+    monkeypatch.setenv("HA_JEV_CONFIG_DIR", str(cfg))
 
 
 @pytest.mark.parametrize("text,target", [
@@ -27,8 +43,8 @@ async def test_scene_requests_offer_only_the_requested_namespace(text, target):
     offered = jev.calls[0][1]["scene"]["criteria"]
     assert target in offered
     assert (set(offered) - {"none"}) <= (
-        core.catalog.hue_scenes if target in core.catalog.hue_scenes
-        else set(core.catalog.scene_options) - core.catalog.hue_scenes
+        set(core.catalog.qualified_scenes) if target in core.catalog.qualified_scenes
+        else set(core.catalog.scene_options) - set(core.catalog.qualified_scenes)
     )
     assert result.outcome == Outcome.EXECUTED
     assert [c.entity_ids for c in ha.calls] == [(target,)]
@@ -76,3 +92,10 @@ async def test_a_dashboard_script_cannot_hide_a_hue_scene_of_the_same_name():
         result = await core.handle(text, speaker_area="bedroom")
         assert result.outcome == Outcome.EXECUTED
         assert [c.entity_ids for c in ha.calls] == [(target,)]
+
+
+async def test_scenes_are_offered_by_name_without_the_option():
+    ctx, cat = await ctx_for("relax")
+    assert not cat.qualified_scenes
+    offered = set(build_request(ctx).questions["scene"]["criteria"])
+    assert {"scene.demo_bedroom_relax", "scene.demo_common_natural_light", "script.demo_movie_mode"} <= offered

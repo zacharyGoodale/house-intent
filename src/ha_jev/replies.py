@@ -47,6 +47,7 @@ TEMPLATES: dict[str, str] = {
     "R_COLOR_UNKNOWN": "I don't know that colour.",
     "R_PLAY": "I can't play specific music yet.",
     "R_TIMERS": "Tell me which timer or alarm to change and the new time.",
+    "R_NO_SCHEDULES": "I can't set timers or alarms here yet; that needs the House Intent Home Assistant integration.",
     "R_SCHEDULE": "Done.",
     "R_EMPTY": "Sorry, I didn't catch that.",
     "R_WHICH_DEVICE": "Which one: {options}?",
@@ -293,7 +294,9 @@ def render_weather(key: str, params: Mapping[str, Any], state_attrs: Mapping[str
                     rain = "precipitation is forecast" if f.get("condition") == "snowy" else "rain is forecast"
                 else:
                     rain = "no rain forecast" if precipitation is not None else "rain chance unavailable"
-                return (f"{word}: {_cond(f.get('condition'))}, high {_t(f.get('temperature'))}, "
+                current = (f"It's {_t(state_attrs['temperature'])}{unit} now. "
+                           if params.get("with_now") and state_attrs.get("temperature") is not None else "")
+                return (f"{current}{word}: {_cond(f.get('condition'))}, high {_t(f.get('temperature'))}, "
                         f"low {_t(f.get('templow'))}, {rain}.")
         raise NoData("no daily forecast for that day")
     if key == "W_TONIGHT":

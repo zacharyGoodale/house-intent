@@ -21,7 +21,9 @@ if TYPE_CHECKING:
 # light names ("turn on the garage lights"); they refuse only with an actuating verb, or as "garage door".
 _OPEN_VERBS = r"(?:open|opening|close|closing|shut|raise|lift|lower|up|down|toggle|trigger|press|operate)"
 LOCK_KEYWORDS = re.compile(
-    r"\b(un)?lock(s|ing)?\b|\bdead ?bolt\b|\bdisarm\b|\barm the alarm\b|\blet me in\b|\bgarage doors?\b"
+    r"\b(un)?lock(s|ing)?\b|\bdead ?bolt\b|\bdisarm\b|\barm the alarm\b|\bgarage doors?\b"
+    # "let me in", "buzz my friend in": letting someone in, said as the whole request (not "let it play in <a room>")
+    r"|\b(?:let|buzz)\s+(?:[\w']+\s+){0,3}in\s*[.!?]*$"
     rf"|\b{_OPEN_VERBS}\b.*\b(garage|gates?)\b|\b(garage|gates?)\b.*\b{_OPEN_VERBS}\b",
     re.IGNORECASE,
 )

@@ -165,9 +165,12 @@ _COVER_KINDS = {"awning": "awning", "blind": "blinds", "curtain": "curtains", "s
 
 BASE_ROWS: tuple[DomainCaps, ...] = (
     DomainCaps("light", True, "light", "light_action", _LIGHT_ACTIONS, ("on_off", "brightness", "color"),
-               builder="light", action_instructions="What should happen to the light(s) in {u}?",
+               builder="light", action_instructions="What should happen to the light(s) in {u}? Brighter, dimmer, warmer "
+                                                  "or cooler said about a room, with no other device named, is about "
+                                                  "its lights.",
                target_option=True, mention=True, groupable=True, device_type="light",
-               device_type_description="lights, lamps, bulbs", in_everything=True, unspecified="room"),
+               device_type_description="lights, lamps, bulbs, and their colour and brightness: brighter, dimmer, "
+                                       "warmer or cooler white", in_everything=True, unspecified="room"),
     DomainCaps("switch", True, "switch", "switch_action", _ONOFF, ("on_off",),
                action_instructions="What should happen to the switch or routine in {u}?",
                target_option=True, mention=True, device_type="switch",

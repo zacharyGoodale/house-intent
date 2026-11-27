@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import copy
 import os
+import re
 import tomllib
 from dataclasses import dataclass, field, fields, is_dataclass, replace
 from pathlib import Path
@@ -128,6 +129,21 @@ class ReplySettings:
 
 
 @dataclass(frozen=True)
+class Handoff:
+    """`[[handoffs]]` in ha_jev.toml: an extra intent answered by the Hermes agent (one with tools for it, such
+    as a restaurant-booking agent). `what` / `not_for` describe it to Jev; any of `keywords` (regex word
+    patterns) in the utterance routes there directly."""
+    id: str
+    what: str
+    not_for: str = ""
+    keywords: tuple[str, ...] = ()
+
+    @property
+    def keyword_pattern(self) -> re.Pattern[str] | None:
+        return re.compile(rf"\b(?:{'|'.join(self.keywords)})\b", re.IGNORECASE) if self.keywords else None
+
+
+@dataclass(frozen=True)
 class Preset:
     id: str
     name: str
@@ -167,6 +183,9 @@ class MusicConfig:
 class ScopeConfig:
     include_exposed: bool = True
     include: list[str] = field(default_factory=list)
+    # Integrations whose scenes need their name said ("Hue scene relax"), for homes whose dashboard scripts wrap
+    # them; without it they would crowd the scripts out. Empty: every scene is offered by its own name.
+    qualified_scene_platforms: list[str] = field(default_factory=list)
     exclude: list[str] = field(default_factory=list)
     aliases: dict[str, list[str]] = field(default_factory=dict)
     defaults: Defaults = field(default_factory=Defaults)
@@ -237,6 +256,7 @@ class Settings:
     people: dict[str, Person] = field(default_factory=dict)
     memory: MemorySettings = field(default_factory=MemorySettings)
     hermes: HermesSettings = field(default_factory=HermesSettings)
+    handoffs: tuple[Handoff, ...] = ()
 
     def person(self, person_id: str | None) -> Person | None:
         return self.people.get(person_id) if person_id else None
@@ -330,6 +350,27 @@ def _parse_people(raw: dict[str, Any]) -> dict[str, Person]:
     return people
 
 
+_BUILT_IN_INTENTS = {"device_control", "device_query", "activate_scene", "list_add", "list_read", "weather",
+                     "timer_alarm_set", "general", "nevermind", "clarify_reply", "calendar", "remember", "forget",
+                     "memory_read"}
+
+
+def _parse_handoffs(raw: Any) -> tuple[Handoff, ...]:
+    out = []
+    for i, h in enumerate(raw or []):
+        h = dict(h)
+        h["keywords"] = tuple(h.get("keywords") or ())
+        handoff = _build(Handoff, h, f"handoffs[{i}]")
+        if not re.fullmatch(r"[a-z][a-z0-9_]*", handoff.id) or handoff.id in _BUILT_IN_INTENTS:
+            raise ConfigError(f"handoffs[{i}].id {handoff.id!r} must be a new lower_snake_case intent name")
+        try:
+            handoff.keyword_pattern
+        except re.error as e:
+            raise ConfigError(f"handoffs[{i}].keywords: {e}") from e
+        out.append(handoff)
+    return tuple(out)
+
+
 def _set_dotted(settings: Settings, key: str, value: Any) -> Settings:
     parts = key.split(".")
     if parts[:3] == ["scope", "defaults", "list"]:
@@ -390,6 +431,7 @@ def load_settings(config_dir: str | Path | None = None, overrides: dict[str, Any
         people=people,
         memory=_build(MemorySettings, main.get("memory"), "memory"),
         hermes=_build(HermesSettings, main.get("hermes"), "hermes"),
+        handoffs=_parse_handoffs(main.get("handoffs")),
     )
     for key, value in (overrides or {}).items():
         settings = _set_dotted(settings, key, value)

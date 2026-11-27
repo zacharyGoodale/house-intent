@@ -114,3 +114,19 @@ async def test_thermostat_without_turn_on_support_is_not_sent_turn_on(home):
     core = await Core.create(s, ha, jev, NullLuna(), clock=lambda: ha.now)
     r = await core.handle("make the hallway thermostat warmer", speaker_area="office")
     assert [c.describe() for c in r.service_calls] == ['climate.set_temperature climate.hallway {"temperature": 21}']
+
+
+async def test_a_home_without_handoffs_has_no_reservation_intent_or_keyword_route(home):
+    ha, s = home
+    jev = FakeJev({"intent": "general"})
+    core = await Core.create(s, ha, jev, NullLuna(), clock=lambda: ha.now)
+    r = await core.handle("book a table at a restaurant", speaker_area="kitchen")
+    assert "reservations" not in jev.calls[0][1]["intent"]["criteria"]
+    assert not r.debug.route.startswith("hermes/")
+
+
+def test_a_handoff_needs_a_new_intent_name(tmp_path, monkeypatch):
+    (tmp_path / "ha_jev.toml").write_text('[[handoffs]]\nid = "weather"\nwhat = "x"\n')
+    monkeypatch.setenv("HA_JEV_CONFIG_DIR", str(tmp_path))
+    with pytest.raises(ConfigError, match="new lower_snake_case intent"):
+        load_settings()

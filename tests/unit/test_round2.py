@@ -222,3 +222,12 @@ async def test_a_distinguishing_word_said_keeps_the_chosen_scene():
                                                    "scene": {"preset.kitchen_evening": 0.9, "script.demo_living_evening": 0.1}},
                             speaker_area="living_room")
     assert calls_of(d)[0][2] == ["light.pendant_lower", "light.pendant_upper"]
+
+
+async def test_turn_it_down_with_nothing_recent_is_the_master_volume():
+    # "it" in "turn it down" is idiom: a relative whole-house action needs no recent device ("set it to 50" does)
+    d, _ = await decide_for("turn it down", {**MEDIA, "scope": "unspecified", "media_action": "volume_down"},
+                            speaker_area="living_room")
+    assert d.outcome == Outcome.EXECUTED
+    assert {e for c in d.calls for e in c.entity_ids} == {
+        "media_player.demo_bedroom_speaker", "media_player.demo_soundbar", "media_player.demo_stereo"}

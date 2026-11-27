@@ -79,3 +79,10 @@ entity_id_map = {}
 
 [replies]
 llm_phrasing = false
+
+# Extra intents for the Hermes agent (docs/configuration.md): here, a restaurant-booking agent with its own tools.
+[[handoffs]]
+id = "reservations"
+what = "Anything about restaurants, dining reservations, table availability, booking or cancelling a table, or scheduling and managing reservation jobs. Includes questions about a specific restaurant by name, Resy, Amooseboosh MCP, and the spoken name Amos Bush."
+not_for = "ordinary personal calendar appointments, meetings, or a generic question like 'what is on my schedule today' without restaurant or reservation context"
+keywords = ["resy", "amooseboosh", "amos\\s+bush", "amuse[\\s-]+bouche", "reservations?", "restaurants?"]

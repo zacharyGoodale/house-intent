@@ -19,7 +19,7 @@ from ha_jev.catalog import Catalog
 from ha_jev.config import Person, Settings
 from ha_jev.executor import execute
 from ha_jev.extract import Extraction, extract, is_question
-from ha_jev.ha.interface import HAClient
+from ha_jev.ha.interface import HAClient, ServiceNotFound
 from ha_jev.jev import ChoiceAnswer, JevClient, JevError, JevResponse, NoulAnswer
 from ha_jev.luna import LunaClient, LunaError, LunaProfile
 from ha_jev.models import (
@@ -229,7 +229,7 @@ class _Run:
         }
         rctx = RequestContext(x, core.catalog, self.area_id, now, list(snapshot.recent_targets), pending, s.policy,
                               memory_options=mem.forget_options(x.text, memory_view.facts) if memory_view else None,
-                              people=calendar_people)
+                              people=calendar_people, handoffs=s.handoffs)
         req = build_request(rctx)
         start = self._lap("build", start)
 
@@ -259,7 +259,8 @@ class _Run:
 
         dctx = DecisionContext(utterance=self.text, extraction=x, catalog=core.catalog, states=states,
                                speaker_area=self.area_id, session=snapshot, policy=s.policy, now=now,
-                               memory=memory_view, people=calendar_people, person=self.speaker)
+                               memory=memory_view, people=calendar_people, person=self.speaker,
+                               handoffs=s.handoffs)
         try:
             decision = decide(dctx, AnswerView(answers))
         except MissingAnswer as e:
@@ -377,6 +378,9 @@ class _Run:
         except Exception as error:
             if fallback:
                 return self.finish(decision, None, [], [])
+            if isinstance(error, ServiceNotFound):  # HA without the integration's schedule service
+                return self.finish(replace(decision, outcome=Outcome.UNSUPPORTED, reply_key="R_NO_SCHEDULES"),
+                                   None, [], [])
             self.error = f"schedule: {type(error).__name__}: {error}"
             return self.finish(replace(decision, outcome=Outcome.ERROR),
                                "I couldn't reach the Home Assistant timer and alarm service.", [], [])

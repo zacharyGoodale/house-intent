@@ -44,7 +44,7 @@ def with_calendars(people: Mapping[str, Person]) -> dict[str, Person]:
 def intent_option() -> dict[str, Any]:
     return {"what": "Ask about someone's calendar or schedule: what's on, appointments, meetings, plans, what someone "
                     "is doing on a day, when the next event is, whether someone is free or busy at a time.",
-            "not_for": "restaurants, dining reservations, booking tables, Resy, Amooseboosh (Amos Bush), reservation jobs; "
+            "not_for": "restaurants, dining reservations or booking tables; "
                        "alarms, timers, sunrise or sunset, the weather, lists, or the state of a device"}
 
 

@@ -16,7 +16,8 @@ from collections.abc import Callable, Mapping, Sequence
 from typing import Any
 
 from ha_jev import capabilities as caps
-from ha_jev.ha.interface import Area, Device, EntityEntry, EntityState, HAError, Registry, floor_names_by_id
+from ha_jev.ha.interface import (Area, Device, EntityEntry, EntityState, HAError, Registry, ServiceNotFound,
+                                 floor_names_by_id)
 from ha_jev.obslog import redact
 
 log = logging.getLogger("ha_jev.ha.real")
@@ -326,7 +327,12 @@ class RealHA:
                    "return_response": return_response}
         if entity_ids:  # services without a target (music search) must not get an empty one
             payload["target"] = {"entity_id": [self._live(e) for e in entity_ids]}
-        result = await self._command(payload)
+        try:
+            result = await self._command(payload)
+        except HAError as e:
+            if str(e).startswith(("not_found:", "service_not_found:")) and not entity_ids:
+                raise ServiceNotFound(f"{domain}.{service}: {e}") from e
+            raise
         if return_response:
             resp = (result or {}).get("response")
             if isinstance(resp, dict):

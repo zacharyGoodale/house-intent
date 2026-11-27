@@ -66,3 +66,19 @@ def test_alarm_clock_cancellation_variants():
     assert parse('cancel tomorrow at 8 AM alarm')['tomorrow'] is True
     assert parse('cancel all 8 AM alarms')['all'] is True
     assert parse('delete my breakfast alarm')['label'] == 'breakfast'
+
+
+async def test_alarm_queries_read_the_alarm_sensors_too():
+    from tests.fakes import FakeJev
+    from tests.unit.test_core import make_core
+    core, _ = await make_core(FakeJev({"intent": "timer_alarm_set"}))
+    result = await core.handle("Do I have an alarm set?")
+    assert result.outcome.value == "answered" and "7:00" in result.reply
+
+
+async def test_without_the_schedule_service_timers_are_unsupported_not_an_error():
+    from tests.fakes import FakeJev
+    from tests.unit.test_core import make_core
+    core, ha = await make_core(FakeJev({"intent": "timer_alarm_set"}))  # StubHA has no ha_jev.manage_schedule
+    result = await core.handle("set a timer for 10 minutes")
+    assert result.outcome.value == "unsupported" and "integration" in result.reply and ha.calls == []

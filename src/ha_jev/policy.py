@@ -24,7 +24,7 @@ from ha_jev import actions, calendars, music
 from ha_jev import capabilities as caps
 from ha_jev import memory as memory_intents
 from ha_jev.catalog import Catalog, normalize_name
-from ha_jev.config import Person, PolicySettings
+from ha_jev.config import Handoff, Person, PolicySettings
 from ha_jev.extract import Extraction
 from ha_jev.ha.interface import EntityState
 from ha_jev.jev import ChoiceAnswer
@@ -75,6 +75,7 @@ class DecisionContext:
     memory: MemoryView | None = None  # memory.py: the speaker and the facts they can see (None = memory off)
     people: Mapping[str, Person] = field(default_factory=dict)  # config/people.toml
     person: Person | None = None  # the known speaker (a per-person wake word), else None
+    handoffs: Sequence[Handoff] = ()  # config [[handoffs]]: intents the Hermes agent owns
 
 
 class Stop(Exception):
@@ -255,10 +256,10 @@ def _decide(ctx: DecisionContext, av: AnswerView) -> Decision:
     if security >= pol.security_refuse and intent.choice in acting:
         return refuse_lock("policy/security", "4", confidence=security)
 
-    # Resy owns reservation schedules, not HA calendars or local timers.
-    if re.search(r"\b(?:resy|amooseboosh|amos\s+bush|amuse[\s-]+bouche|reservations?|restaurants?)\b",
-                 x.text, re.IGNORECASE):
-        return _luna("hermes/reservations", "reservations", 1.0)
+    # A handoff's own words route to its agent before HA calendars, lists or local timers can claim them.
+    for h in ctx.handoffs:
+        if h.keyword_pattern is not None and h.keyword_pattern.search(x.text):
+            return _luna(f"hermes/{h.id}", h.id, 1.0)
 
     # 3: a pending clarification is answered, or dropped. A room question is also answered by naming one of the
     # offered rooms, even when the reply is short enough that the intent is unsure ("the study").
@@ -275,8 +276,8 @@ def _decide(ctx: DecisionContext, av: AnswerView) -> Decision:
         if needs_llm >= pol.needs_llm_route:
             return _luna("luna/low_intent", "5", intent_p)
         return _clarify("R_WHAT", "clarify/low_intent", "5", intent_p)
-    if intent.choice == "reservations":
-        return _luna("hermes/reservations", "reservations", intent_p)
+    if intent.choice in {h.id for h in ctx.handoffs}:
+        return _luna(f"hermes/{intent.choice}", intent.choice, intent_p)
     if intent.choice == "general":
         if intent_p >= pol.general_route or needs_llm >= pol.needs_llm_route:
             return _luna("luna/general", "6", intent_p)
@@ -302,6 +303,8 @@ def _timers(turn: Turn) -> Decision:
     operation = parse(turn.ctx.extraction.text)
     if operation is None:
         return _luna("hermes/schedules", "8", turn.intent_p)
+    if operation["op"] == "query":  # "when's my next alarm": the sensors count too, not only Jev's own schedules
+        return _next_scheduled(turn, operation["kind"], "timer/query", turn.intent_p)
     return Decision(Outcome.ANSWERED, reply_key="R_OK", route="timer", rule="8",
                     confidence=turn.intent_p, schedule=operation)
 
@@ -766,7 +769,8 @@ def _control_for(turn: Turn, s: str, confs: list[float]) -> Plan:
         return _build_plan(turn, recent, confs, "recent", None, route="device_control/recent")
     device_type = turn.device_type()
     row = turn.table.caps_for((turn.table.domains_for_device_type(device_type) or ("",))[0])
-    unresolved_pronoun = ctx.extraction.anaphor and not ctx.session.recent_targets and not (row and row.implicit_target)
+    unresolved_pronoun = (ctx.extraction.anaphor and not ctx.session.recent_targets
+                          and not (row and row.implicit_target) and not _whole_house_action(turn, row))
     if s == "area":
         areas, area_confs = _area_answers(turn)
         if not areas:
@@ -802,6 +806,18 @@ def _control_for(turn: Turn, s: str, confs: list[float]) -> Plan:
     if unresolved_pronoun:
         raise _which_device(turn, "device_control/unspecified", confs)  # "set it to 50" with nothing recent (class 5)
     return _plan_unspecified(turn, device_type, confs)
+
+
+def _whole_house_action(turn: Turn, row: caps.DomainCaps | None) -> bool:
+    """A relative action that means the whole house when no device is named ("turn it down", "mute it": the
+    master volume), so its "it" is idiom, not a pronoun waiting for a recent device. One that takes a value
+    ("set it to 50") still needs to know what "it" is."""
+    if row is None or not row.action_question or not turn.av.has(row.action_question):
+        return False
+    a = turn.av.choice(row.action_question)
+    action = turn.table.action(row.domain, a.choice)
+    return (action is not None and action.all_when_unspecified and action.value is None
+            and p_of(a) >= turn.pol.act)
 
 
 def named_target(turn: Turn) -> tuple[str | None, float]:
@@ -1210,7 +1226,7 @@ def _build_plan(turn: Turn, targets: list[str], confs: list[float], scope_kind: 
 # ---- scenes (§6.5) ----------------------------------------------------------------------------
 def _activation(turn: Turn, key: str, confs: list[float], route: str) -> Plan:
     cat = turn.cat
-    if key in cat.hue_scenes and key not in cat.scene_options_for(turn.ctx.extraction.text):
+    if key in cat.qualified_scenes and key not in cat.scene_options_for(turn.ctx.extraction.text):
         raise _stop_unsupported("R_NO_SCENE", route)
     if key in cat.presets:
         preset = cat.presets[key]
@@ -1237,7 +1253,7 @@ def _same_name_in_rooms(turn: Turn, chosen: str, confs: list[float], route: str)
     (§6.5). The scene Choice can't tell "Study Reading" from "Hall Reading" when the user says "reading"."""
     cat = turn.cat
     siblings = [key for key in scene_siblings(cat, chosen)
-                if (key in cat.hue_scenes) == (chosen in cat.hue_scenes)]
+                if cat.qualified_scenes.get(key) == cat.qualified_scenes.get(chosen)]
     if siblings and scene_distinguished(cat, chosen, turn.ctx.extraction.text):
         siblings = []  # the user said a word only the chosen one has (its alias, a device name): no doubt
     if not siblings:
@@ -1320,6 +1336,25 @@ def _parse_ts(value: Any, now: datetime) -> datetime | None:
     return dt.astimezone(now.tzinfo) if now.tzinfo else dt
 
 
+def _next_scheduled(turn: Turn, word: str, route: str, conf: float | None) -> Decision:
+    """The next alarm or timer from HA's timestamp sensors (an alarm clock, a phone). Core then asks the
+    schedule service, when HA has it, and answers with whichever is sooner."""
+    cat, ctx = turn.cat, turn.ctx
+    listed = set(getattr(cat.defaults, f"{word}_sensors", None) or [])  # D9-9: config beats naming
+    sensors = sorted(e for e, ce in cat.entities.items()
+                     if e in listed or caps.is_timestamp_kind(ce.domain, ce.device_class, ce.name, word))
+    best = None
+    for s in sensors:
+        st = ctx.states.get(s)
+        dt = _parse_ts(st.state if st else None, ctx.now)
+        if dt is not None and dt >= ctx.now and (best is None or dt < best):
+            best = dt
+    reads = [_state_read(sensors)] if sensors else []
+    if best is None:
+        return _answered("Q_NO_ALARM", route, {"kind": word}, reads, conf)
+    return _answered("Q_NEXT_ALARM", route, {"kind": word, "at": best, "now": ctx.now}, reads, conf)
+
+
 def _query(turn: Turn) -> Decision:
     cat, ctx, av = turn.cat, turn.ctx, turn.av
     qa = av.choice("query_attribute")
@@ -1339,20 +1374,7 @@ def _query(turn: Turn) -> Decision:
         return _answered("Q_SUN", route, {"event": attr.capitalize(), "at": dt, "now": ctx.now},
                          [_state_read(suns)], conf)
     if attr in ("next_alarm", "next_timer"):
-        word = attr.split("_", 1)[1]
-        listed = set(getattr(cat.defaults, f"{word}_sensors", None) or [])  # D9-9: config beats naming
-        sensors = sorted(e for e, ce in cat.entities.items()
-                         if e in listed or caps.is_timestamp_kind(ce.domain, ce.device_class, ce.name, word))
-        best = None
-        for s in sensors:
-            st = ctx.states.get(s)
-            dt = _parse_ts(st.state if st else None, ctx.now)
-            if dt is not None and dt >= ctx.now and (best is None or dt < best):
-                best = dt
-        reads = [_state_read(sensors)] if sensors else []
-        if best is None:
-            return _answered("Q_NO_ALARM", route, {"kind": word}, reads, conf)
-        return _answered("Q_NEXT_ALARM", route, {"kind": word, "at": best, "now": ctx.now}, reads, conf)
+        return _next_scheduled(turn, attr.split("_", 1)[1], route, conf)
     if attr == "motion":
         areas, aconfs = _area_answers(turn)
         if not areas and ctx.speaker_area in cat.areas:
@@ -1640,9 +1662,12 @@ def _weather(turn: Turn) -> Decision:
         return _unsupported("R_CANT", "weather", name="The weather")
     period = when.choice
     text = turn.ctx.extraction.text
-    if (period in ("now", "none")
-            and re.search(r"\b(?:temp(?:erature)?|how (?:hot|cold|warm|cool))\b", text, re.IGNORECASE)
-            and not re.search(r"\b(?:now|currently|current|at the moment)\b", text, re.IGNORECASE)):
+    # A bare "what's the temperature" (no time said): the reading now, then today's high, low and rain.
+    with_now = (period in ("now", "none", "today")
+                and bool(re.search(r"\b(?:temp(?:erature)?|how (?:hot|cold|warm|cool))\b", text, re.IGNORECASE))
+                and not re.search(r"\b(?:now|currently|current|at the moment|today|tonight|tomorrow|week)\b",
+                                  text, re.IGNORECASE))
+    if with_now:
         period = "today"
     route = f"weather/{period}"
     if period in ("now", "none"):
@@ -1651,7 +1676,7 @@ def _weather(turn: Turn) -> Decision:
     key = {"next_hours": "W_NEXT_HOURS", "today": "W_DAY", "tomorrow": "W_DAY", "tonight": "W_TONIGHT",
            "this_week": "W_WEEK"}[period]
     domain, service = caps.WEATHER_FORECAST_SERVICE
-    return _answered(key, route, {"entity": w, "when": period},
+    return _answered(key, route, {"entity": w, "when": period, **({"with_now": True} if with_now else {})},
                      [ReadCall("service", domain, service, (w,), {"type": forecast_type})], conf)
 
 

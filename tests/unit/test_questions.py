@@ -52,7 +52,7 @@ async def test_state_shape_omits_empty_fields():
     }
     # the home directory: names from the registry and config, so intent can recognise a bare scene name
     assert any(r.startswith("Living Room") for r in home["rooms"]) and "Alder" in home["devices"] and "Front Door" not in home["devices"]
-    assert "Hue scene Common Area Relax" in home["scenes"] and "movie mode" in home["scenes"]
+    assert "Common Area Relax" in home["scenes"] and "movie mode" in home["scenes"]
 
 
 async def test_every_question_passes_sdk_validation():

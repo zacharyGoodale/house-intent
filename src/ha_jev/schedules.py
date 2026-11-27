@@ -27,6 +27,9 @@ def parse(text: str) -> dict | None:
     query = re.fullmatch(r"(?:when(?:'s| is)?|what(?:'s| is)?|how long(?: is)?)(?: left (?:on|for))? (?:my |the |a )?(?:next )?(alarm|timer)(?: set for| remaining)?", text)
     if query:
         return {'op': 'query', 'kind': query[1]}
+    held = re.fullmatch(r"(?:do i have|have i got|is there|are there) (?:an? |any )?(alarm|timer)s?(?: set| running| on)?", text)
+    if held:
+        return {'op': 'query', 'kind': held[1]}
     text = re.sub(r'^(cancel|delete|remove|stop) (?:my |the )?(alarms?) (?:at|for) (.+)$', r'\1 \3 \2', text)
     cancel = re.fullmatch(r'(?:cancel|delete|remove|stop) (?:my |the )?(?:(all)(?: my| the)? )?(?:(.+?) )?(timers?|alarms?)', text)
     if cancel:
